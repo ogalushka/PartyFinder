@@ -1,0 +1,32 @@
+version: "3.8"
+
+services:
+    mongo:
+        image: mongo
+        container_name: mongo
+        ports:
+          - 27017:27017
+        volumes:
+          - mongodbdata:/data/db
+    rabbitmq:
+        image: rabbitmq:management
+        container_name: rabbitmq
+        ports:
+          - 5672:5672
+          - 15672:15672
+        volumes:
+          - rabbitmqdata:/var/lib/rabbitmq
+        hostname: rabbitmq
+    sql-db:
+        image: mcr.microsoft.com/mssql/server:2019-latest
+        container_name: sqldb
+        user: root
+        ports:
+          - 1433:1433
+        environment:
+          SA_PASSWORD: "change_this_password"
+          ACCEPT_EULA: "Y"
+
+volumes:
+    mongodbdata:
+    rabbitmqdata:

@@ -1,0 +1,47 @@
+﻿<UserControl x:Class="WPFClient.Views.Players.PlayerView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:local="clr-namespace:WPFClient.Views.Players"
+             xmlns:players="clr-namespace:WPFClient.ViewModel.Players" 
+             d:DataContext="{d:DesignInstance Type=players:PlayerViewModel}"
+             mc:Ignorable="d" 
+             d:DesignHeight="50" d:DesignWidth="600">
+    <StackPanel Orientation="Horizontal">
+        <TextBlock Text="{Binding Name}" FontSize="30"/>
+
+        <ListBox ItemsSource="{Binding MatchedGames}">
+            <ListBox.ItemsPanel>
+                <ItemsPanelTemplate>
+                    <StackPanel Orientation="Horizontal" />
+                </ItemsPanelTemplate>
+            </ListBox.ItemsPanel>
+
+            <ListBox.ItemTemplate>
+                <DataTemplate DataType="{x:Type BitmapImage}">
+                    <Image Source="{Binding}" Stretch="UniformToFill" Width="40" Height="50"/>
+                </DataTemplate>
+            </ListBox.ItemTemplate>
+        </ListBox>
+
+        <ListBox ItemsSource="{Binding MatchedTimes}">
+            <ListBox.ItemsPanel>
+                <ItemsPanelTemplate>
+                    <StackPanel Orientation="Horizontal" />
+                </ItemsPanelTemplate>
+            </ListBox.ItemsPanel>
+
+            <ListBox.ItemTemplate>
+                <DataTemplate DataType="{x:Type players:TimeRangeViewModel}">
+                    <StackPanel Orientation="Vertical">
+                        <TextBlock Text="{Binding Day}" HorizontalAlignment="Center" />
+                        <TextBlock Text="{Binding StartTime}" HorizontalAlignment="Center" />
+                        <TextBlock Text="{Binding EndTime}" HorizontalAlignment="Center" />
+                    </StackPanel>
+                </DataTemplate>
+            </ListBox.ItemTemplate>
+        </ListBox>
+
+    </StackPanel>
+</UserControl>
