@@ -41,6 +41,8 @@ namespace GamesCatalog.Controllers
         [Route("games")]
         public async Task<IActionResult> AddGame(int gameId)
         {
+            //TODO validation
+            //TODO also save game to local db
             await usersRepository.AddGame(GetUserId(), gameId);
             return Ok();
         }
@@ -57,6 +59,7 @@ namespace GamesCatalog.Controllers
         [Route("time")]
         public async Task<IActionResult> AddTimeWindows([FromBody] TimeWindowDto timeWindow)
         {
+            // TODO validation
             await usersRepository.AddTimeRange(GetUserId(), timeWindow);
             return Ok();
         }
@@ -73,6 +76,5 @@ namespace GamesCatalog.Controllers
         {
             return HttpContext.User.Claims.First(kv => kv.Type == "username").Value;
         }
-        
     }
 }

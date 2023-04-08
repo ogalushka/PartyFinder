@@ -5,7 +5,7 @@ using System.Security.Cryptography;
 using System.Text;
 using System.Text.Json;
 
-namespace UserService.Repository
+namespace Identity.Repository
 {
     //TODO better interface or remove it completly, move users to DB
     public class UserRepository : IRepository<string, User>
@@ -32,8 +32,11 @@ namespace UserService.Repository
         public async Task Create(User user)
         {
             var hash = UserHash(user.Username);
+            if (File.Exists(hash))
+            {
+                throw new Exception("User already exists");
+            }
             await using var writer = File.OpenWrite(hash);
-            //TODO does not clear file but writes on top resulting in invalid jsons
             await JsonSerializer.SerializeAsync(writer, user);
         }
 

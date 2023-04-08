@@ -1,4 +1,5 @@
 ﻿using Identity.Entity;
+using Identity.Repository;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authorization;
@@ -6,9 +7,8 @@ using Microsoft.AspNetCore.DataProtection;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using System.Security.Claims;
-using UserService.Repository;
 
-namespace UserService.Controller
+namespace Identity.Controller
 {
     public class UserController : ControllerBase
     {
@@ -36,8 +36,8 @@ namespace UserService.Controller
             user.PasswordHash = passwordHasher.HashPassword(user, password);
             await repository.Create(user);
 
-            
-            await HttpContext.SignInAsync(         
+
+            await HttpContext.SignInAsync(
                     CookieAuthenticationDefaults.AuthenticationScheme,
                     Convert(user)
                 );
@@ -140,7 +140,6 @@ namespace UserService.Controller
             return Ok("OK");
         }
 
-        // TODO should be a service
         public static ClaimsPrincipal Convert(User user)
         {
             var claims = new List<Claim>()

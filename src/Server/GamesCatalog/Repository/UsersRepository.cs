@@ -1,8 +1,6 @@
 ﻿using GamesCatalog.Dto;
-using Microsoft.AspNetCore.HttpLogging;
 using System.Reflection;
 using GamesCatalog.Entity;
-using Azure.Identity;
 using System.Data.SqlClient;
 
 namespace GamesCatalog.Repository
@@ -10,6 +8,7 @@ namespace GamesCatalog.Repository
     public class UsersRepository
     {
         // TODO move to config
+        // TODO docker config with database setup
         public static string DataBaseName = "Players";
         public static string Connection = "Server=localhost,1433;User Id=sa;Password=change_this_password;";
         public UsersRepository() { }
@@ -19,8 +18,10 @@ namespace GamesCatalog.Repository
             using var connection = new SqlConnection(Connection);
             await connection.OpenAsync();
             await connection.ChangeDatabaseAsync(DataBaseName);
-            var querry = $"INSERT INTO PlayerGame (PlayerId, GameId) Values ('{userId}', '{gameId}');";
+            var querry = "INSERT INTO PlayerGame (PlayerId, GameId) Values (@UserId, @GameId);";
             using var sqlCommand = new SqlCommand(querry, connection);
+            sqlCommand.Parameters.AddWithValue("@UserId", userId);
+            sqlCommand.Parameters.AddWithValue("@GameId", gameId);
             using var sqlDataReader = await sqlCommand.ExecuteReaderAsync();
         }
 
@@ -29,8 +30,10 @@ namespace GamesCatalog.Repository
             using var connection = new SqlConnection(Connection);
             await connection.OpenAsync();
             await connection.ChangeDatabaseAsync(DataBaseName);
-            var querry = $"DELETE FROM PlayerGame WHERE PlayerId='{userId}' AND GameId='{gameId}';";
+            var querry = "DELETE FROM PlayerGame WHERE PlayerId=@UserId AND GameId=@GameId;";
             using var sqlCommand = new SqlCommand(querry, connection);
+            sqlCommand.Parameters.AddWithValue("@UserId", userId);
+            sqlCommand.Parameters.AddWithValue("@GameId", gameId);
             using var sqlDataReader = await sqlCommand.ExecuteReaderAsync();
         }
         
@@ -39,8 +42,11 @@ namespace GamesCatalog.Repository
             using var connection = new SqlConnection(Connection);
             await connection.OpenAsync();
             await connection.ChangeDatabaseAsync(DataBaseName);
-            var querry = $"INSERT INTO PlayerTime (PlayerId, StartTime, EndTime) Values ('{userId}', '{timeWindow.StartTime}', '{timeWindow.EndTime}');";
+            var querry = "INSERT INTO PlayerTime (PlayerId, StartTime, EndTime) Values (@UserId, @StartTime, @EndTime);";
             using var sqlCommand = new SqlCommand(querry, connection);
+            sqlCommand.Parameters.AddWithValue("@UserId", userId);
+            sqlCommand.Parameters.AddWithValue("@StartTime", timeWindow.StartTime);
+            sqlCommand.Parameters.AddWithValue("@EndTime", timeWindow.EndTime);
             using var sqlDataReader = await sqlCommand.ExecuteReaderAsync();
         }
 
@@ -49,14 +55,17 @@ namespace GamesCatalog.Repository
             using var connection = new SqlConnection(Connection);
             await connection.OpenAsync();
             await connection.ChangeDatabaseAsync(DataBaseName);
-            var querry = $"DELETE FROM PlayerTime WHERE PlayerId='{userId}' AND StartTime='{timeWindow.StartTime}' AND EndTime='{timeWindow.EndTime}';";
+            var querry = "DELETE FROM PlayerTime WHERE PlayerId=@UserId AND StartTime=@StartTime AND EndTime=EndTime;";
             using var sqlCommand = new SqlCommand(querry, connection);
+            sqlCommand.Parameters.AddWithValue("@UserId", userId);
+            sqlCommand.Parameters.AddWithValue("@StartTime", timeWindow.StartTime);
+            sqlCommand.Parameters.AddWithValue("@EndTime", timeWindow.EndTime);
             using var sqlDataReader = await sqlCommand.ExecuteReaderAsync();
         }
 
         public async Task<UserMatchDto[]> GetUserRecomendations(string userId)
         {
-            var querry = $@"
+            var querry = @"
 SELECT pt2.PlayerId, pg.GameId, pt2.StartTime, pt2.EndTime,
 	-- get common start time (max)
 	CASE 
@@ -73,14 +82,14 @@ SELECT pt2.PlayerId, pg.GameId, pt2.StartTime, pt2.EndTime,
 FROM PlayerTime pt1
 -- get all time window pairs with player
 JOIN PlayerTime pt2 
-	ON pt1.PlayerId = '{userId}'
-	AND pt2.PlayerId != '{userId}'
+	ON pt1.PlayerId = @UserId
+	AND pt2.PlayerId != @UserId
 	AND pt1.StartTime < pt2.EndTime 
 	AND pt1.EndTime > pt2.StartTime
 -- join games for other players if they match player  games
 JOIN PlayerGame pg
 	ON pg.PlayerId = pt2.PlayerId 
-	AND pg.GameId IN (SELECT GameId FROM PlayerGame WHERE PlayerId = '{userId}')
+	AND pg.GameId IN (SELECT GameId FROM PlayerGame WHERE PlayerId = @UserId)
 	-- TODO a way to check filter out small timewindows, 
 	-- considering time windows will be split if they go from sunday to monday
 ";
@@ -89,6 +98,7 @@ JOIN PlayerGame pg
             await connection.OpenAsync();
             await connection.ChangeDatabaseAsync(DataBaseName);
             using var sqlCommand = new SqlCommand(querry, connection);
+            sqlCommand.Parameters.AddWithValue("@UserId", userId);
             using var sqlReader = await sqlCommand.ExecuteReaderAsync();
             var records = new List<UserMatch>();
             var fields = new Dictionary<string, Field>();
