@@ -1,4 +1,5 @@
-﻿using GamesCatalog.Http;
+﻿using GamesCatalog.Dto;
+using GamesCatalog.Http;
 using Microsoft.AspNetCore.Mvc;
 
 namespace GamesCatalog.Controllers
@@ -15,10 +16,10 @@ namespace GamesCatalog.Controllers
         }
 
         [HttpGet]
-        public async Task<IActionResult> Get()
+        public async Task<ActionResult<GameDto[]>> Get(string? name)
         {
-            await gamesHttpClient.GetGames();
-            return Ok();
+            var game = await gamesHttpClient.GetGames(name);
+            return Ok(game.Results);
         }
     }
 }

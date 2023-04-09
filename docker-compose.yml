@@ -21,8 +21,12 @@ services:
         image: mcr.microsoft.com/mssql/server:2019-latest
         container_name: sqldb
         user: root
+        command: /bin/bash /db_init/entrypoint.sh
         ports:
           - 1433:1433
+        volumes:
+          - sqldata:/var/opt/mssql/data
+          - ./db/mssql:/db_init
         environment:
           SA_PASSWORD: "change_this_password"
           ACCEPT_EULA: "Y"
@@ -30,3 +34,4 @@ services:
 volumes:
     mongodbdata:
     rabbitmqdata:
+    sqldata:

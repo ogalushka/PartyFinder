@@ -34,7 +34,7 @@ namespace Identity.Repository
             var hash = UserHash(user.Username);
             if (File.Exists(hash))
             {
-                throw new Exception("User already exists");
+                throw new ApplicationException("User already exists");
             }
             await using var writer = File.OpenWrite(hash);
             await JsonSerializer.SerializeAsync(writer, user);

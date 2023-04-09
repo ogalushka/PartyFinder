@@ -1,8 +1,12 @@
 ﻿using Autofac;
+using System.Net;
 using System.Net.Http;
 using System.Windows;
 using WPFClient.Command;
 using WPFClient.Factory;
+using WPFClient.GameCatalog.Command;
+using WPFClient.GameCatalog.Service;
+using WPFClient.GameCatalog.ViewModel;
 using WPFClient.Service;
 using WPFClient.Store;
 using WPFClient.ViewModel;
@@ -35,14 +39,22 @@ namespace WPFClient
             builder.RegisterType<CommandFactory>();
             builder.RegisterType<Navigation>().SingleInstance();
             builder.RegisterType<AppViewModel>();
-            builder.RegisterType<HttpClient>();
+            builder.Register((context) =>
+            {
+                var httpClientHandler = new HttpClientHandler();
+                httpClientHandler.CookieContainer = new CookieContainer();
+                return new HttpClient(httpClientHandler);
+            }).SingleInstance();
             builder.RegisterType<IdentityService>();
+            builder.RegisterType<GamesService>();
             //View model
             builder.RegisterType<LoginViewModel>();
             builder.RegisterType<HomePageViewModel>();
+            builder.RegisterType<GameCatalogViewModel>();
             //Command
             builder.RegisterType<LoginCommand>();
             builder.RegisterType<LogOutCommand>();
+            builder.RegisterType<SearchGamesCommand>();
 
             builder.RegisterType<SessionStore>();
             return builder.Build();

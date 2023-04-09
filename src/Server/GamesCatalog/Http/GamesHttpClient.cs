@@ -16,21 +16,20 @@ namespace GamesCatalog.Http
             apiKey = configuration.GetValue<string>("RAWGKey") ?? throw new Exception("No RAWGKey api key set");
         }
 
-        public async Task GetGames()
+        public async Task<GamesDto> GetGames(string? name)
         {
+            //TODO caching?
             var query = new Dictionary<string, string?>()
             {
                 ["key"] = apiKey,
-                ["tags"] = string.Join(",", DefaultTags)
+                ["tags"] = string.Join(",", DefaultTags),
+                ["search"] = name
             };
 
             var uri = QueryHelpers.AddQueryString("api/games", query);
             var result = await httpClient.GetAsync(uri);
-            var str = await result.Content.ReadAsStringAsync();
             var parsed = await result.Content.ReadFromJsonAsync<GamesDto>();
-            //var result = await httpClient.GetFromJsonAsync<GamesDto>(uri);
-            //var resultStr = result.ToString();
-            Console.WriteLine(str);
+            return parsed ?? throw new ApplicationException("Failed to get games list");
         }
     }
 }

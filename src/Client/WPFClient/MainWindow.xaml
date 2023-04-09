@@ -6,9 +6,12 @@
         xmlns:local="clr-namespace:WPFClient" 
         xmlns:views="clr-namespace:WPFClient.Views" 
         xmlns:vms="clr-namespace:WPFClient.ViewModel"
+        xmlns:gcvm="clr-namespace:WPFClient.GameCatalog.ViewModel"
+        xmlns:gcv="clr-namespace:WPFClient.GameCatalog.Views"
         d:DataContext="{d:DesignInstance Type=local:AppViewModel}"
         mc:Ignorable="d"
         Title="MainWindow" Height="450" Width="800">
+        <!-- TODO there has to be a better way than adding all views here manually -->
     <Grid>
         <Grid.Resources>
             <DataTemplate DataType="{x:Type vms:LoginViewModel}">
@@ -16,6 +19,9 @@
             </DataTemplate>
             <DataTemplate DataType="{x:Type vms:HomePageViewModel}">
                 <views:HomePage />
+            </DataTemplate>
+            <DataTemplate DataType="{x:Type gcvm:GameCatalogViewModel}">
+                <gcv:GameCatalogView />
             </DataTemplate>
         </Grid.Resources>
         <ContentControl Content="{Binding CurrentViewModel}"/>

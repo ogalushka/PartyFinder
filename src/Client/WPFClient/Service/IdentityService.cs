@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Linq;
 using System.Net;
 using System.Net.Http;
 using System.Threading.Tasks;
@@ -25,14 +24,8 @@ namespace WPFClient.Service
             var result = await httpClient.GetAsync(uri);
             if (result.StatusCode == HttpStatusCode.OK)
             {
-                if (result.Headers.TryGetValues("set-cookie", out var cookie))
-                {
-                    sessionStore.User.Email = email;
-                    // TODO cookie handling check out, Application.setCookie and CookieContainer
-                    sessionStore.User.Cookie = cookie.First();
-                    return true;
-                }
-                return false;
+                sessionStore.User.Email = email;
+                return true;
             }
             else
             {

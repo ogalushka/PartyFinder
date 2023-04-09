@@ -1,12 +1,7 @@
 ﻿using System.Text.Json.Serialization;
 
-namespace GamesCatalog.Dto
+namespace WPFClient.GameCatalog.Service
 {
-    public class GamesDto
-    {
-        public GameDto[] Results { get; set; } = Array.Empty<GameDto>();
-    }
-
     public class GameDto
     {
         public int Id { get; set; }
