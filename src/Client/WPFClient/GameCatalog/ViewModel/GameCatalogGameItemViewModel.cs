@@ -1,20 +1,43 @@
 ﻿using System;
+using System.Windows.Input;
 using System.Windows.Media.Imaging;
+using WPFClient.Factory;
+using WPFClient.GameCatalog.Command;
 
 namespace WPFClient.GameCatalog.ViewModel
 {
-    public class GameCatalogGameItemViewModel
+    public class GameCatalogGameItemViewModel : ViewModelBase
     {
-        public GameCatalogGameItemViewModel(string name, string coverUrl, bool added)
+        private readonly CommandFactory commandFactory;
+
+        public GameCatalogGameItemViewModel(CommandFactory commandFactory, int id, string name, string? coverUrl, bool added)
         {
+            this.commandFactory = commandFactory;
+            Id = id;
             Name = name;
-            Cover = new BitmapImage(new Uri(coverUrl));
-            ButtonText = added ? "Remove" : "Add";
+            Added = added;
+            CoverUrl = coverUrl;
+            if (string.IsNullOrEmpty(coverUrl))
+            {
+                Cover = null;
+            }
+            else
+            {
+                Cover = new BitmapImage(new Uri(coverUrl));
+            }
         }
 
+        private bool added;
+        public bool Added {
+            get { return added; }
+            set { SetField(ref added, value); }
+        }
+        public string? CoverUrl { get; }
         public string Name { get; }
-        public string ButtonText { get; }
-        public BitmapImage Cover { get; } 
+        public BitmapImage? Cover { get; } 
         public int Id { get; }
+
+
+        public ICommand ToggleGameCommand => commandFactory.Get<ToggleGameCommand>(this);
     }
 }

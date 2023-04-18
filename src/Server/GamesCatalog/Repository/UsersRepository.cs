@@ -8,64 +8,86 @@ namespace GamesCatalog.Repository
     public class UsersRepository
     {
         // TODO move to config
-        // TODO docker config with database setup
+        // TODO multiple repositories
+        // TODO api and db objects separation
         public static string DataBaseName = "Players";
         public static string Connection = "Server=localhost,1433;User Id=sa;Password=change_this_password;";
         public UsersRepository() { }
 
+        public async Task AddGame(string userId, int gameId, string name, string? coverUrl)
+        {
+            var query = "INSERT INTO Games (GameId, Name, CoverUrl) Values (@GameId, @Name, @CoverUrl);" + 
+                "INSERT INTO PlayerGame (PlayerId, GameId) Values (@UserId, @GameId);";
+            var param = new Dictionary<string, object>
+            {
+                { "@UserId", userId },
+                { "@GameId", gameId },
+                { "@Name", name },
+                { "@CoverUrl", coverUrl }
+            };
+            await ExecuteQuerry(query, param);
+        }
+
+        public async Task<bool> GameCached(int gameId)
+        {
+            var query = "SELECT 1 FROM Games WHERE GameId=@GameId;";
+            var param = new Dictionary<string, object>
+            {
+                { "@GameId", gameId }
+            };
+            var result = await ExecuteQuerry(query, param);
+            return result.Count > 0;
+        }
+
         public async Task AddGame(string userId, int gameId)
         {
-            using var connection = new SqlConnection(Connection);
-            await connection.OpenAsync();
-            await connection.ChangeDatabaseAsync(DataBaseName);
-            var querry = "INSERT INTO PlayerGame (PlayerId, GameId) Values (@UserId, @GameId);";
-            using var sqlCommand = new SqlCommand(querry, connection);
-            sqlCommand.Parameters.AddWithValue("@UserId", userId);
-            sqlCommand.Parameters.AddWithValue("@GameId", gameId);
-            using var sqlDataReader = await sqlCommand.ExecuteReaderAsync();
+            var query = "INSERT INTO PlayerGame (PlayerId, GameId) Values (@UserId, @GameId);";
+            var param = new Dictionary<string, object>
+            {
+                { "@UserId", userId },
+                { "@GameId", gameId }
+            };
+            await ExecuteQuerry(query, param);
         }
 
         public async Task RemoveGame(string userId, int gameId)
         {
-            using var connection = new SqlConnection(Connection);
-            await connection.OpenAsync();
-            await connection.ChangeDatabaseAsync(DataBaseName);
-            var querry = "DELETE FROM PlayerGame WHERE PlayerId=@UserId AND GameId=@GameId;";
-            using var sqlCommand = new SqlCommand(querry, connection);
-            sqlCommand.Parameters.AddWithValue("@UserId", userId);
-            sqlCommand.Parameters.AddWithValue("@GameId", gameId);
-            using var sqlDataReader = await sqlCommand.ExecuteReaderAsync();
+            var query = "DELETE FROM PlayerGame WHERE PlayerId=@UserId AND GameId=@GameId;";
+            var param = new Dictionary<string, object>
+            {
+                { "@UserId", userId },
+                { "@GameId", gameId }
+            };
+            await ExecuteQuerry(query, param);
         }
         
         public async Task AddTimeRange(string userId, TimeWindowDto timeWindow)
         {
-            using var connection = new SqlConnection(Connection);
-            await connection.OpenAsync();
-            await connection.ChangeDatabaseAsync(DataBaseName);
-            var querry = "INSERT INTO PlayerTime (PlayerId, StartTime, EndTime) Values (@UserId, @StartTime, @EndTime);";
-            using var sqlCommand = new SqlCommand(querry, connection);
-            sqlCommand.Parameters.AddWithValue("@UserId", userId);
-            sqlCommand.Parameters.AddWithValue("@StartTime", timeWindow.StartTime);
-            sqlCommand.Parameters.AddWithValue("@EndTime", timeWindow.EndTime);
-            using var sqlDataReader = await sqlCommand.ExecuteReaderAsync();
+            var query = "INSERT INTO PlayerTime (PlayerId, StartTime, EndTime) Values (@UserId, @StartTime, @EndTime);";
+            var param = new Dictionary<string, object>
+            {
+                { "@UserId", userId },
+                { "@StartTime", timeWindow.StartTime },
+                { "@EndTime", timeWindow.EndTime }
+            };
+            await ExecuteQuerry(query, param);
         }
 
         public async Task RemoteTimeRange(string userId, TimeWindowDto timeWindow)
         {
-            using var connection = new SqlConnection(Connection);
-            await connection.OpenAsync();
-            await connection.ChangeDatabaseAsync(DataBaseName);
-            var querry = "DELETE FROM PlayerTime WHERE PlayerId=@UserId AND StartTime=@StartTime AND EndTime=EndTime;";
-            using var sqlCommand = new SqlCommand(querry, connection);
-            sqlCommand.Parameters.AddWithValue("@UserId", userId);
-            sqlCommand.Parameters.AddWithValue("@StartTime", timeWindow.StartTime);
-            sqlCommand.Parameters.AddWithValue("@EndTime", timeWindow.EndTime);
-            using var sqlDataReader = await sqlCommand.ExecuteReaderAsync();
+            var query = "DELETE FROM PlayerTime WHERE PlayerId=@UserId AND StartTime=@StartTime AND EndTime=EndTime;";
+            var param = new Dictionary<string, object>
+            {
+                { "@UserId", userId },
+                { "@StartTime", timeWindow.StartTime },
+                { "@EndTime", timeWindow.EndTime }
+            };
+            await ExecuteQuerry(query, param);
         }
 
         public async Task<UserMatchDto[]> GetUserRecomendations(string userId)
         {
-            var querry = @"
+            var query = @"
 SELECT pt2.PlayerId, pg.GameId, pt2.StartTime, pt2.EndTime,
 	-- get common start time (max)
 	CASE 
@@ -93,28 +115,16 @@ JOIN PlayerGame pg
 	-- TODO a way to check filter out small timewindows, 
 	-- considering time windows will be split if they go from sunday to monday
 ";
-            
-            using var connection = new SqlConnection(Connection);
-            await connection.OpenAsync();
-            await connection.ChangeDatabaseAsync(DataBaseName);
-            using var sqlCommand = new SqlCommand(querry, connection);
-            sqlCommand.Parameters.AddWithValue("@UserId", userId);
-            using var sqlReader = await sqlCommand.ExecuteReaderAsync();
-            var records = new List<UserMatch>();
-            var fields = new Dictionary<string, Field>();
-            while (sqlReader.Read())
+            var param = new Dictionary<string, object>
             {
-                fields.Clear();
-                for (var i = 0; i < sqlReader.FieldCount; i++)
-                {
-                    fields.Add(sqlReader.GetName(i), new Field { Type = sqlReader.GetFieldType(i), Value = sqlReader.GetValue(i) });
-                }
-                records.Add(Field.CastRecrod<UserMatch>(fields));
-            }
+                { "@UserId", userId },
+            };
+            var records = await ExecuteQuerry(query, param);
 
             //TODO check if possible to group with SQL
+            var parsedRecords = records.Select(r => Field.CastRecord<UserMatch>(r));
             var result = new Dictionary<string, UserMatchDto>();
-            foreach (var record in records)
+            foreach (var record in parsedRecords)
             {
                 if (result.TryGetValue(record.PlayerId, out var user))
                 {
@@ -133,6 +143,48 @@ JOIN PlayerGame pg
 
             return result.Values.ToArray();
         }
+
+        // TODO test new connection vs persistent connection
+        private async Task<List<Dictionary<string, Field>>> ExecuteQuerry(string query, Dictionary<string, object> queryParams)
+        {
+            var records = new List<Dictionary<string, Field>>();
+            
+            using var connection = new SqlConnection(Connection);
+            await connection.OpenAsync();
+            await connection.ChangeDatabaseAsync(DataBaseName);
+            using var sqlCommand = new SqlCommand(query, connection);
+            foreach (var pair in queryParams)
+            {
+                sqlCommand.Parameters.AddWithValue(pair.Key, pair.Value);
+            }
+            using var sqlReader = await sqlCommand.ExecuteReaderAsync();
+            while (sqlReader.Read())
+            {
+                var fields = new Dictionary<string, Field>();
+                for (var i = 0; i < sqlReader.FieldCount; i++)
+                {
+                    fields.Add(sqlReader.GetName(i), new Field { Type = sqlReader.GetFieldType(i), Value = sqlReader.GetValue(i) });
+                }
+                records.Add(fields);
+            }
+
+            return records;
+        }
+
+        public async Task<GameDto[]> GetGames(string userId)
+        {
+            var query =
+                "SELECT g.GameId as Id, g.Name, g.CoverUrl FROM PlayerGame pg " +
+                "JOIN Games g " +
+                "ON g.GameId = pg.GameId " +
+                "WHERE pg.PlayerId = @UserId";
+            var param = new Dictionary<string, object>
+            {
+                { "@UserId", userId }
+            };
+            var records = await ExecuteQuerry(query, param);
+            return records.Select(r => Field.CastRecord<GameDto>(r)).ToArray();
+        }
     }
 
     class Field
@@ -140,7 +192,7 @@ JOIN PlayerGame pg
         public Type Type = typeof(int);
         public object Value = 0;
 
-        public static T CastRecrod<T>(Dictionary<string, Field> recrodFields) where T : new()
+        public static T CastRecord<T>(Dictionary<string, Field> recrodFields) where T : new()
         {
             var result = new T();
 

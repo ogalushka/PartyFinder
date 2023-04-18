@@ -1,19 +1,23 @@
 ﻿using GamesCatalog.Dto;
+using GamesCatalog.Http;
 using GamesCatalog.Repository;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace GamesCatalog.Controllers
 {
+    //TODO validation
     [Authorize]
     [Route("user")]
     public class UserController : ControllerBase
     {
         private readonly UsersRepository usersRepository;
+        private readonly GamesHttpClient gamesClient;
 
-        public UserController(UsersRepository usersRepository)
+        public UserController(UsersRepository usersRepository, GamesHttpClient gamesClient)
         {
             this.usersRepository = usersRepository;
+            this.gamesClient = gamesClient;
         }
 
         [HttpGet]
@@ -25,7 +29,7 @@ namespace GamesCatalog.Controllers
             //TODO check sorting with database querry
             var result = userList.Order(Comparer<UserMatchDto>.Create(
                 (u1, u2) => u1.MatchingGames.Count - u2.MatchingGames.Count)
-            ); 
+            );
             return Ok(result);
         }
 
@@ -37,13 +41,28 @@ namespace GamesCatalog.Controllers
             return Ok();
         }
 
+
+        [HttpGet]
+        [Route("games")]
+        public async Task<ActionResult<GameDto[]>> GetGames()
+        {
+            return await usersRepository.GetGames(GetUserId());
+        }
+
         [HttpPost]
         [Route("games")]
         public async Task<IActionResult> AddGame(int gameId)
         {
-            //TODO validation
-            //TODO also save game to local db
-            await usersRepository.AddGame(GetUserId(), gameId);
+            var isGameCached = await usersRepository.GameCached(gameId);
+            if (isGameCached)
+            {
+                await usersRepository.AddGame(GetUserId(), gameId);
+            }
+            else
+            {
+                var games = await gamesClient.GetGame(gameId);
+                await usersRepository.AddGame(GetUserId(), gameId, games.Name, games.CoverUrl);
+            }
             return Ok();
         }
 

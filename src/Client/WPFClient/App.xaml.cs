@@ -23,7 +23,7 @@ namespace WPFClient
             container = BuildContainer();
 
             var navigation = container.Resolve<Navigation>();
-             navigation.SetViewModel<LoginViewModel>();
+            navigation.SetViewModel<LoginViewModel>();
             //navigation.SetViewModel<HomePageViewModel>();
 
             var viewModel = container.Resolve<AppViewModel>();
@@ -47,6 +47,8 @@ namespace WPFClient
             }).SingleInstance();
             builder.RegisterType<IdentityService>();
             builder.RegisterType<GamesService>();
+            builder.RegisterType<PlayerService>();
+            builder.RegisterType<ProfileStore>().SingleInstance();
             //View model
             builder.RegisterType<LoginViewModel>();
             builder.RegisterType<HomePageViewModel>();
@@ -55,6 +57,7 @@ namespace WPFClient
             builder.RegisterType<LoginCommand>();
             builder.RegisterType<LogOutCommand>();
             builder.RegisterType<SearchGamesCommand>();
+            builder.RegisterType<ToggleGameCommand>();
 
             builder.RegisterType<SessionStore>();
             return builder.Build();

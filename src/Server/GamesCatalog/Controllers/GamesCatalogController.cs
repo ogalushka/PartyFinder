@@ -18,8 +18,8 @@ namespace GamesCatalog.Controllers
         [HttpGet]
         public async Task<ActionResult<GameDto[]>> Get(string? name)
         {
-            var game = await gamesHttpClient.GetGames(name);
-            return Ok(game.Results);
+            var games = await gamesHttpClient.GetGames(name);
+            return Ok(games);
         }
     }
 }

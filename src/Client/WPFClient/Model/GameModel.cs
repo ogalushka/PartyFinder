@@ -4,9 +4,9 @@
     {
         public readonly int Id;
         public readonly string Name;
-        public readonly string Url;
+        public readonly string? Url;
 
-        public GameModel(int id, string name, string url)
+        public GameModel(int id, string name, string? url)
         {
             Id = id;
             Name = name;

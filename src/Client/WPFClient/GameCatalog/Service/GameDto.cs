@@ -6,7 +6,6 @@ namespace WPFClient.GameCatalog.Service
     {
         public int Id { get; set; }
         public string Name { get; set; } = "";
-        [JsonPropertyName("background_image")]
-        public string BackgroundImage { get; set; } = "";
+        public string? CoverUrl { get; set; } 
     }
 }
