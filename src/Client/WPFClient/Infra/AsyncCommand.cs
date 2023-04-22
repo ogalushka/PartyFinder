@@ -28,7 +28,7 @@ namespace WPFClient
             try
             {
                 IsExecuting = true;
-                await ExecuteAsync();
+                await ExecuteAsync(parameter);
             }
             finally
             {
@@ -36,6 +36,6 @@ namespace WPFClient
             }
         }
 
-        protected abstract Task ExecuteAsync();
+        protected abstract Task ExecuteAsync(object? parameter);
     }
 }

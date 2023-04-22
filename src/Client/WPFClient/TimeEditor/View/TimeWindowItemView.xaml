@@ -1,0 +1,30 @@
+﻿<UserControl x:Class="WPFClient.TimeEditor.View.TimeWindowItemView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:local="clr-namespace:WPFClient.TimeEditor.View"
+             mc:Ignorable="d" 
+             d:DesignHeight="450" d:DesignWidth="800">
+    <Grid>
+        <StackPanel VerticalAlignment="Center">
+            <Button Content="Add" />
+        </StackPanel>
+        <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
+            <TextBlock Text="Start Time:" VerticalAlignment="Center"/>
+            <DatePicker SelectedDate="{Binding StartDate, Mode=TwoWay}" FirstDayOfWeek="Monday"/>
+            <TextBlock Text="End Time:" VerticalAlignment="Center"/>
+            <DatePicker SelectedDate="{Binding EndDate, Mode=TwoWay}"/>
+
+            <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
+                <Button Content="Edit" />
+                <Button Content="Delete" />
+            </StackPanel>
+
+            <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
+                <Button Content="Done" />
+            </StackPanel>
+
+        </StackPanel>
+    </Grid>
+</UserControl>

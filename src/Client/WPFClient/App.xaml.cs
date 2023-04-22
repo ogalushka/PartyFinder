@@ -2,14 +2,21 @@
 using System.Net;
 using System.Net.Http;
 using System.Windows;
+using WPFClient.Autofac;
 using WPFClient.Command;
 using WPFClient.Factory;
 using WPFClient.GameCatalog.Command;
 using WPFClient.GameCatalog.Service;
 using WPFClient.GameCatalog.ViewModel;
+using WPFClient.GameCatalog.Views;
 using WPFClient.Service;
 using WPFClient.Store;
+using WPFClient.TimeEditor.Command;
+using WPFClient.TimeEditor.Service;
+using WPFClient.TimeEditor.View;
+using WPFClient.TimeEditor.ViewModel;
 using WPFClient.ViewModel;
+using WPFClient.Views;
 
 namespace WPFClient
 {
@@ -20,19 +27,19 @@ namespace WPFClient
         protected override void OnStartup(StartupEventArgs e)
         {
             base.OnStartup(e);
-            container = BuildContainer();
+            var view = new MainWindow();
+            container = BuildContainer(view);
 
             var navigation = container.Resolve<Navigation>();
             navigation.SetViewModel<LoginViewModel>();
             //navigation.SetViewModel<HomePageViewModel>();
 
             var viewModel = container.Resolve<AppViewModel>();
-            var view = new MainWindow();
             view.DataContext = viewModel;
             view.Show();
         }
 
-        private IContainer BuildContainer()
+        private IContainer BuildContainer(MainWindow view)
         {
             //TODO consider adding separate scope for authenticated part of the app
             var builder = new ContainerBuilder();
@@ -48,20 +55,26 @@ namespace WPFClient
             builder.RegisterType<IdentityService>();
             builder.RegisterType<GamesService>();
             builder.RegisterType<PlayerService>();
+            builder.RegisterType<TimeService>();
             builder.RegisterType<ProfileStore>().SingleInstance();
             //View model
-            builder.RegisterType<LoginViewModel>();
-            builder.RegisterType<HomePageViewModel>();
-            builder.RegisterType<GameCatalogViewModel>();
+            builder.RegisterViewWithBinding<HomePageViewModel, HomePage>(view);
+            builder.RegisterViewWithBinding<GameCatalogViewModel, GameCatalogView>(view);
+            builder.RegisterViewWithBinding<TimeEditorViewModel, TimeEditorView>(view);
+            builder.RegisterViewWithBinding<LoginViewModel, LoginView>(view);
+
             //Command
+            builder.RegisterGeneric(typeof(NavigateCommand<>));
             builder.RegisterType<LoginCommand>();
             builder.RegisterType<LogOutCommand>();
             builder.RegisterType<SearchGamesCommand>();
             builder.RegisterType<ToggleGameCommand>();
+            builder.RegisterType<DeleteTimeRangeCommand>();
 
             builder.RegisterType<SessionStore>();
             return builder.Build();
         }
+
 
         protected override void OnExit(ExitEventArgs e)
         {

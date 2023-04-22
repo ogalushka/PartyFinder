@@ -33,5 +33,15 @@ namespace WPFClient.Model
                 Games.RemoveAt(index);
             }
         }
+
+        public void RemoveTime(TimeRangeModel timeRangeModel)
+        {
+            TimeRanges.Remove(timeRangeModel);
+        }
+
+        public void AddTime(TimeRangeModel timeRangeModel)
+        {
+            TimeRanges.Add(timeRangeModel);
+        }
     }
 }

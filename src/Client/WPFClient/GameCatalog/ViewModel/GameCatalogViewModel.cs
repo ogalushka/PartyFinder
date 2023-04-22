@@ -1,8 +1,10 @@
 ﻿using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Windows.Input;
+using WPFClient.Command;
 using WPFClient.Factory;
 using WPFClient.GameCatalog.Command;
+using WPFClient.ViewModel;
 
 namespace WPFClient.GameCatalog.ViewModel
 {
@@ -28,13 +30,13 @@ namespace WPFClient.GameCatalog.ViewModel
         public ObservableCollection<GameCatalogGameItemViewModel> Games { get; }
 
         private string searchQuery = "";
-        public string SearchQuery 
-        {
-            get { return searchQuery; } 
-            set { SetField(ref searchQuery, value); } 
+        public string SearchQuery {
+            get { return searchQuery; }
+            set { SetField(ref searchQuery, value); }
         }
 
         // TODO live results update
         public ICommand SearchCommand => commandFactory.Get<SearchGamesCommand>(this);
+        public ICommand NavigateHome => commandFactory.Get<NavigateCommand<HomePageViewModel>>(this);
     }
 }

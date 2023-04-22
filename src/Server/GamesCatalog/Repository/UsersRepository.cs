@@ -18,7 +18,7 @@ namespace GamesCatalog.Repository
         {
             var query = "INSERT INTO Games (GameId, Name, CoverUrl) Values (@GameId, @Name, @CoverUrl);" + 
                 "INSERT INTO PlayerGame (PlayerId, GameId) Values (@UserId, @GameId);";
-            var param = new Dictionary<string, object>
+            var param = new Dictionary<string, object?>
             {
                 { "@UserId", userId },
                 { "@GameId", gameId },
@@ -131,12 +131,19 @@ JOIN PlayerGame pg
                     user.MatchingGames.Add(record.GameId);
                     if (!user.MatchingTimeWindows.Any(w => w.StartTime == record.CommonStartTime && w.EndTime == record.CommonEndTime))
                     {
-                        user.MatchingTimeWindows.Add(new TimeWindowDto(record.CommonStartTime, record.CommonEndTime));
+                        user.MatchingTimeWindows.Add(new TimeWindowDto { StartTime = record.CommonStartTime, EndTime = record.CommonEndTime });
                     }
                 }
                 else
                 {
-                    var userDto = new UserMatchDto(record.PlayerId, new() { record.GameId }, new() { new TimeWindowDto(record.CommonStartTime, record.CommonEndTime) });
+                    var userDto = new UserMatchDto(
+                        record.PlayerId,
+                        new() { record.GameId },
+                        new() { new TimeWindowDto {
+                            StartTime = record.CommonStartTime,
+                            EndTime = record.CommonEndTime
+                            }
+                        });
                     result.Add(record.PlayerId, userDto);
                 }
             }
@@ -145,7 +152,7 @@ JOIN PlayerGame pg
         }
 
         // TODO test new connection vs persistent connection
-        private async Task<List<Dictionary<string, Field>>> ExecuteQuerry(string query, Dictionary<string, object> queryParams)
+        private async Task<List<Dictionary<string, Field>>> ExecuteQuerry(string query, Dictionary<string, object?> queryParams)
         {
             var records = new List<Dictionary<string, Field>>();
             
@@ -184,6 +191,21 @@ JOIN PlayerGame pg
             };
             var records = await ExecuteQuerry(query, param);
             return records.Select(r => Field.CastRecord<GameDto>(r)).ToArray();
+        }
+
+        public async Task<TimeWindowDto[]> GetTimes(string userId)
+        {
+            var query =
+                "SELECT t.StartTime, t.EndTime FROM PlayerTime t " +
+                "WHERE t.PlayerId = @UserId";
+            var param = new Dictionary<string, object>
+            {
+                { "@UserId", userId }
+            };
+
+            var records = await ExecuteQuerry(query, param);
+
+            return records.Select(r => Field.CastRecord<TimeWindowDto>(r)).ToArray();
         }
     }
 

@@ -6,15 +6,8 @@ using System.Runtime.CompilerServices;
 
 namespace WPFClient
 {
-    public class ViewModelBase : INotifyPropertyChanged, INotifyDataErrorInfo
+    public class ViewModelBase : INotifyPropertyChanged
     {
-        public event EventHandler<DataErrorsChangedEventArgs>? ErrorsChanged;
-        public bool HasErrors => false;
-        public IEnumerable GetErrors(string? propertyName)
-        {
-            return Array.Empty<string>();
-        }
-
         public event PropertyChangedEventHandler? PropertyChanged;
         protected void OnPropertyChanged(string propertyName) => PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
 
@@ -24,6 +17,11 @@ namespace WPFClient
             field = value;
             OnPropertyChanged(propertyName);
             return true;
+        }
+
+        protected void InvokeProertyChange([CallerMemberName] string propertyName = "")
+        {
+            OnPropertyChanged(propertyName);
         }
     }
 }

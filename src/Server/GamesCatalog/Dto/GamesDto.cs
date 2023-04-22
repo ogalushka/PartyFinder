@@ -1,4 +1,5 @@
 ﻿using System.Text.Json.Serialization;
+//TODO group dtos by usage, database / client api / external api
 
 namespace GamesCatalog.Dto
 {

@@ -16,7 +16,7 @@ namespace WPFClient.GameCatalog.Command
             this.gameItemViewModel = gameItemViewModel;
         }
 
-        protected override async Task ExecuteAsync()
+        protected override async Task ExecuteAsync(object? parameters)
         {
             if (gameItemViewModel.Added)
             {

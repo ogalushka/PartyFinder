@@ -1,13 +1,13 @@
 ﻿using System;
 using System.Threading.Tasks;
 using System.Windows.Input;
-using WPFClient.GameCatalog.ViewModel;
 using WPFClient.Service;
 using WPFClient.Store;
 using WPFClient.ViewModel;
 
 namespace WPFClient.Command
 {
+    //TODO continue here: Save session between closing app
     public class LoginCommand : ICommand
     {
         private readonly LoginViewModel viewModel;
@@ -49,8 +49,8 @@ namespace WPFClient.Command
             var loginSuccess = await identityService.TryLogin(viewModel.Email, viewModel.Password);
             if (loginSuccess)
             {
-                //navigationStore.SetViewModel<HomePageViewModel>();
-                navigationStore.SetViewModel<GameCatalogViewModel>();
+                navigationStore.SetViewModel<HomePageViewModel>();
+                //navigationStore.SetViewModel<GameCatalogViewModel>();
             }
         }
     }

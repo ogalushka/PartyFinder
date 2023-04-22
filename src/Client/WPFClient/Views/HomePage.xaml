@@ -14,6 +14,14 @@
             <Image x:Name="image" Height="100" Width="100"/>
             <StackPanel Orientation="Horizontal" HorizontalAlignment="Right">
                 <TextBlock Text="{Binding Email}" />
+                <Button Content="Settings">
+                    <Button.ContextMenu>
+                        <ContextMenu>
+                            <MenuItem Header="My Games" Command="{Binding MyGames}"/>
+                            <MenuItem Header="My Times" Command="{Binding MyTimes}"/>
+                        </ContextMenu>
+                    </Button.ContextMenu>
+                </Button>
                 <Button Content="LogOut" Command="{Binding LogOut}" />
             </StackPanel>
             <ListBox ItemsSource="{Binding MatchedPlayers}">

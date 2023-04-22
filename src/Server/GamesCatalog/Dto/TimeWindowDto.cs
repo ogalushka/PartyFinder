@@ -1,4 +1,8 @@
 ﻿namespace GamesCatalog.Dto
 {
-    public record TimeWindowDto(int StartTime, int EndTime);
+    public class TimeWindowDto
+    {
+        public int StartTime { get; set; }
+        public int EndTime { get; set; }
+    }
 }

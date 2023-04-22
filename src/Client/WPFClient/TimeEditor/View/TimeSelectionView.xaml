@@ -1,0 +1,31 @@
+﻿<UserControl x:Class="WPFClient.TimeEditor.View.TimeSelectionView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:local="clr-namespace:WPFClient.TimeEditor.View"
+             xmlns:viewmodel="clr-namespace:WPFClient.TimeEditor.ViewModel"
+             d:DataContext="{d:DesignInstance Type=viewmodel:TimeSelectionViewModel}"
+             mc:Ignorable="d" 
+             d:DesignHeight="20" d:DesignWidth="95">
+    <StackPanel Orientation="Horizontal">
+        <ComboBox Width="52" ItemsSource="{Binding DaysList}" SelectedItem="{Binding Day}" IsEnabled="{Binding Editable}"/>
+        <StackPanel Orientation="Horizontal">
+            <TextBox
+                Width="20"
+                TextAlignment="Right" 
+                MaxLength="2"
+                Text="{Binding Hours}" 
+                BorderBrush="{x:Null}" 
+                IsEnabled="{Binding Editable}" />
+            <TextBlock Text=":" />
+            <TextBox 
+                Width="20" 
+                TextAlignment="Right" 
+                MaxLength="2"
+                Text="{Binding Minutes}" 
+                BorderBrush="{x:Null}" 
+                IsEnabled="{Binding Editable}"/>
+        </StackPanel>
+    </StackPanel>
+</UserControl>

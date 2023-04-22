@@ -4,12 +4,15 @@ using System.Windows.Input;
 using System.Windows.Media.Imaging;
 using WPFClient.Command;
 using WPFClient.Factory;
+using WPFClient.GameCatalog.ViewModel;
 using WPFClient.Model;
 using WPFClient.Store;
+using WPFClient.TimeEditor.ViewModel;
 using WPFClient.ViewModel.Players;
 
 namespace WPFClient.ViewModel
 {
+    //TODO correct time view
     public class HomePageViewModel : ViewModelBase
     {
         private readonly User user;
@@ -45,5 +48,16 @@ namespace WPFClient.ViewModel
             }
         }
 
+        public ICommand MyGames {
+            get {
+                return commandFactory.Get<NavigateCommand<GameCatalogViewModel>>();
+            }
+        }
+
+        public ICommand MyTimes {
+            get {
+                return commandFactory.Get<NavigateCommand<TimeEditorViewModel>>();
+            }
+        }
     }
 }

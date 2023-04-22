@@ -10,7 +10,16 @@
     <Compile Update="GameCatalog\View\GameCatalogView.xaml.cs">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Update="Views\HomeView.xaml.cs">
+    <Compile Update="TimeEditor\View\TimeEditorView.xaml.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Update="TimeEditor\View\TimeSelectionView.xaml.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Update="TimeEditor\View\TimeWindowItemView.xaml.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Update="Views\HomePage.xaml.cs">
       <SubType>Code</SubType>
     </Compile>
     <Compile Update="Views\LoginView.xaml.cs">
@@ -36,7 +45,16 @@
     <Page Update="GameCatalog\View\GameCatalogView.xaml">
       <SubType>Designer</SubType>
     </Page>
-    <Page Update="Views\HomeView.xaml">
+    <Page Update="TimeEditor\View\TimeEditorView.xaml">
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Update="TimeEditor\View\TimeSelectionView.xaml">
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Update="TimeEditor\View\TimeWindowItemView.xaml">
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Update="Views\HomePage.xaml">
       <SubType>Designer</SubType>
     </Page>
     <Page Update="Views\LoginView.xaml">

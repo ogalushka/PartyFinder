@@ -34,11 +34,16 @@ namespace GamesCatalog.Controllers
         }
 
         [HttpGet]
-        public async Task<IActionResult> GetProfile(string? userId)
+        public async Task<ActionResult<UserDto>> GetProfile(string? userId)
         {
             var requestedId = string.IsNullOrEmpty(userId) ? GetUserId() : userId;
-            //await usersRepository.GetGamesList(requestedId);
-            return Ok();
+            var gamesTask = usersRepository.GetGames(requestedId);
+            var timesTask = usersRepository.GetTimes(requestedId);
+
+            var games = await gamesTask;
+            var times = await timesTask;
+
+            return Ok(new UserDto(games, times));
         }
 
 
