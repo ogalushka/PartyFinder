@@ -7,7 +7,6 @@ using WPFClient.ViewModel;
 
 namespace WPFClient.Command
 {
-    //TODO continue here: Save session between closing app
     public class LoginCommand : ICommand
     {
         private readonly LoginViewModel viewModel;

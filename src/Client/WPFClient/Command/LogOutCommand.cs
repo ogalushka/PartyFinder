@@ -8,12 +8,14 @@ namespace WPFClient.Command
     public class LogOutCommand : ICommand
     {
         private readonly Navigation navigationStore;
+        private readonly PersistentStorage persistentStorage;
 
         public event EventHandler? CanExecuteChanged;
 
-        public LogOutCommand(Navigation navigationStore)
+        public LogOutCommand(Navigation navigationStore, PersistentStorage persistentStorage)
         {
             this.navigationStore = navigationStore;
+            this.persistentStorage = persistentStorage;
         }
 
         public bool CanExecute(object? parameter)
@@ -23,6 +25,7 @@ namespace WPFClient.Command
 
         public void Execute(object? parameter)
         {
+            persistentStorage.ClearCookies();
             navigationStore.SetViewModel<LoginViewModel>();
         }
     }

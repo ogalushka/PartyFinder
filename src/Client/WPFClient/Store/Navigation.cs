@@ -19,7 +19,7 @@ namespace WPFClient.Store
         public INotifyPropertyChanged CurrentViewModel {
             //TODO saner way to be not nullable?
             get { return currentViewModel ?? throw new Exception(); }
-            private set {
+            set {
                 currentViewModel = value;
                 ViewModelChanged();
             }

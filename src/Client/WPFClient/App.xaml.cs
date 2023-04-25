@@ -1,4 +1,5 @@
 ﻿using Autofac;
+using System;
 using System.Net;
 using System.Net.Http;
 using System.Windows;
@@ -31,12 +32,17 @@ namespace WPFClient
             container = BuildContainer(view);
 
             var navigation = container.Resolve<Navigation>();
-            navigation.SetViewModel<LoginViewModel>();
+            var preloaderViewModel = container.Resolve<PreloaderViewModel>();
+            navigation.CurrentViewModel = preloaderViewModel;
+            //navigation.SetViewModel<PreloaderViewModel>();
             //navigation.SetViewModel<HomePageViewModel>();
 
             var viewModel = container.Resolve<AppViewModel>();
             view.DataContext = viewModel;
             view.Show();
+
+            preloaderViewModel.LoadApp();
+
         }
 
         private IContainer BuildContainer(MainWindow view)
@@ -50,8 +56,14 @@ namespace WPFClient
             {
                 var httpClientHandler = new HttpClientHandler();
                 httpClientHandler.CookieContainer = new CookieContainer();
+                return httpClientHandler;
+            }).SingleInstance();
+            builder.Register((context) =>
+            {
+                var httpClientHandler = context.Resolve<HttpClientHandler>();
                 return new HttpClient(httpClientHandler);
             }).SingleInstance();
+            builder.RegisterType<PersistentStorage>().SingleInstance();
             builder.RegisterType<IdentityService>();
             builder.RegisterType<GamesService>();
             builder.RegisterType<PlayerService>();
@@ -62,6 +74,7 @@ namespace WPFClient
             builder.RegisterViewWithBinding<GameCatalogViewModel, GameCatalogView>(view);
             builder.RegisterViewWithBinding<TimeEditorViewModel, TimeEditorView>(view);
             builder.RegisterViewWithBinding<LoginViewModel, LoginView>(view);
+            builder.RegisterViewWithBinding<PreloaderViewModel, PreloaderView>(view);
 
             //Command
             builder.RegisterGeneric(typeof(NavigateCommand<>));
