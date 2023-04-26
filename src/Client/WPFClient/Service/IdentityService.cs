@@ -45,6 +45,27 @@ namespace WPFClient.Service
             return await GetUserProfile();
         }
 
+        public async Task<bool> TryRegister(string email, string password)
+        {
+            try
+            {
+                var uri = new Uri($"http://localhost:5189/?username={email}&password={password}");
+                var result = await httpClient.GetAsync(uri);
+                result.EnsureSuccessStatusCode();
+
+                var loginCookies = httpClientHandler.CookieContainer.GetAllCookies();
+                persistentStorage.SaveCookies(loginCookies);
+
+                await GetUserProfile();
+                return true;
+            }
+            catch (Exception)
+            {
+                // TODO display error
+                return false;
+            }
+        }
+
         public async Task<bool> TryLogin(string email, string password)
         {
             try
@@ -79,11 +100,13 @@ namespace WPFClient.Service
                     return false;
                 }
 
+                profileStore.PlayerModel.Games.Clear();
                 profileStore.PlayerModel.Games.AddRange(
                         user.Games.Select(g =>
                             new GameModel(g.Id, g.Name, g.CoverUrl)
                         )
                     );
+                profileStore.PlayerModel.TimeRanges.Clear();
                 profileStore.PlayerModel.TimeRanges.AddRange(
                         user.Times.Select(t =>
                             new TimeRangeModel(t.StartTime, t.EndTime)

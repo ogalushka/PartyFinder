@@ -6,7 +6,8 @@
              xmlns:local="clr-namespace:WPFClient.Views" 
              xmlns:viewmodel="clr-namespace:WPFClient.ViewModel"
              xmlns:listvm="clr-namespace:WPFClient.ViewModel.Players"
-             xmlns:players="clr-namespace:WPFClient.Views.Players" d:DataContext="{d:DesignInstance Type=viewmodel:HomePageViewModel}"
+             xmlns:players="clr-namespace:WPFClient.Views.Players" 
+             d:DataContext="{d:DesignInstance Type=viewmodel:HomePageViewModel}"
              mc:Ignorable="d" 
              d:DesignHeight="450" d:DesignWidth="800">
     <Grid>

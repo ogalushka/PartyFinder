@@ -36,7 +36,6 @@ namespace Identity.Controller
             user.PasswordHash = passwordHasher.HashPassword(user, password);
             await repository.Create(user);
 
-
             await HttpContext.SignInAsync(
                     CookieAuthenticationDefaults.AuthenticationScheme,
                     Convert(user)

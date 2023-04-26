@@ -20,9 +20,8 @@ namespace WPFClient.ViewModel
 
         public HomePageViewModel(SessionStore sessionStore, CommandFactory commandFactory)
         {
-            this.user = sessionStore.User;
+            user = sessionStore.User;
             matchedPlayers = new();
-            matchedPlayers.Add(new PlayerViewModel("name1"));
             this.commandFactory = commandFactory;
         }
 
@@ -30,7 +29,7 @@ namespace WPFClient.ViewModel
         private ObservableCollection<PlayerViewModel> matchedPlayers;
         public ObservableCollection<PlayerViewModel> MatchedPlayers => matchedPlayers;
 
-        public BitmapImage Img => new BitmapImage(new Uri("https://media.rawg.io/media/games/456/456dea5e1c7e3cd07060c14e96612001.jpg"));
+        public BitmapImage Img => new();
         //TODO setting directly to model in MVVM? This can also be readonly on this view
         public string Email {
             get {

@@ -35,7 +35,6 @@ namespace WPFClient.TimeEditor.ViewModel
 
             foreach (var time in profileStore.PlayerModel.TimeRanges)
             {
-                //TODO DI resolve??
                 times.Add(new TimeEditorItemViewModel(profileStore, time));
             }
             times.Add(new TimeEditorItemViewModel(profileStore));

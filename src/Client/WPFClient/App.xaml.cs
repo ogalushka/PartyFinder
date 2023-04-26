@@ -10,6 +10,9 @@ using WPFClient.GameCatalog.Command;
 using WPFClient.GameCatalog.Service;
 using WPFClient.GameCatalog.ViewModel;
 using WPFClient.GameCatalog.Views;
+using WPFClient.Register.Command;
+using WPFClient.Register.View;
+using WPFClient.Register.ViewModel;
 using WPFClient.Service;
 using WPFClient.Store;
 using WPFClient.TimeEditor.Command;
@@ -75,6 +78,7 @@ namespace WPFClient
             builder.RegisterViewWithBinding<TimeEditorViewModel, TimeEditorView>(view);
             builder.RegisterViewWithBinding<LoginViewModel, LoginView>(view);
             builder.RegisterViewWithBinding<PreloaderViewModel, PreloaderView>(view);
+            builder.RegisterViewWithBinding<RegisterViewModel, RegisterView>(view);
 
             //Command
             builder.RegisterGeneric(typeof(NavigateCommand<>));
@@ -83,6 +87,7 @@ namespace WPFClient
             builder.RegisterType<SearchGamesCommand>();
             builder.RegisterType<ToggleGameCommand>();
             builder.RegisterType<DeleteTimeRangeCommand>();
+            builder.RegisterType<RegisterCommand>();
 
             builder.RegisterType<SessionStore>();
             return builder.Build();

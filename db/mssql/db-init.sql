@@ -10,9 +10,29 @@ GO
 USE Players
 GO
 
-CREATE TABLE PlayerGame (PlayerId varchar(100), GameId int)
+CREATE TABLE Games (
+	GameId int NOT NULL,
+	Name varchar(100) NOT NULL,
+	CoverUrl varchar(150),
+	PRIMARY KEY (GameId)
+)
 GO
 
-CREATE TABLE PlayerTime (PlayerId varchar(100), StartTime int, EndTime int)
+CREATE TABLE PlayerGame (
+	PlayerId varchar(100) NOT NULL,
+	GameId int NOT NULL
+	PRIMARY KEY (PlayerId, GameId),
+	FOREIGN KEY (GameId) REFERENCES Games(GameId)
+)
 GO
+
+CREATE TABLE PlayerTime (
+	PlayerId varchar(100) NOT NULL,
+	StartTime int NOT NULL,
+	EndTime int NOT NULL
+)
+GO
+
+
+
 

@@ -2,6 +2,7 @@
 using System.Windows.Input;
 using WPFClient.Command;
 using WPFClient.Factory;
+using WPFClient.Register.ViewModel;
 
 namespace WPFClient.ViewModel
 {
@@ -58,8 +59,7 @@ namespace WPFClient.ViewModel
 
         public ICommand GoRegister {
             get {
-                //TODO registration
-                return commandFactory.Get<LoginCommand>(this);
+                return commandFactory.Get<NavigateCommand<RegisterViewModel>>(this);
             }
         }
     }

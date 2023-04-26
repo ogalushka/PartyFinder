@@ -10,7 +10,12 @@ namespace WPFClient
 
         private bool isExecuting = false;
 
-        public bool CanExecute(object? parameter)
+        protected void InvokeCanExecute()
+        {
+            CanExecuteChanged?.Invoke(this, new EventArgs());
+        }
+
+        public virtual bool CanExecute(object? parameter)
         {
             return !IsExecuting;
         }

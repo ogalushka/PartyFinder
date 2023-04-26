@@ -58,6 +58,7 @@ namespace GamesCatalog.Controllers
         [Route("games")]
         public async Task<IActionResult> AddGame(int gameId)
         {
+            // TODO add recache if record is old
             var isGameCached = await usersRepository.GameCached(gameId);
             if (isGameCached)
             {

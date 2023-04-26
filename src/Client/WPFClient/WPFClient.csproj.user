@@ -10,6 +10,9 @@
     <Compile Update="GameCatalog\View\GameCatalogView.xaml.cs">
       <SubType>Code</SubType>
     </Compile>
+    <Compile Update="Register\View\RegisterView.xaml.cs">
+      <SubType>Code</SubType>
+    </Compile>
     <Compile Update="TimeEditor\View\TimeEditorView.xaml.cs">
       <SubType>Code</SubType>
     </Compile>
@@ -46,6 +49,9 @@
       <SubType>Designer</SubType>
     </Page>
     <Page Update="GameCatalog\View\GameCatalogView.xaml">
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Update="Register\View\RegisterView.xaml">
       <SubType>Designer</SubType>
     </Page>
     <Page Update="TimeEditor\View\TimeEditorView.xaml">
