@@ -9,5 +9,7 @@ namespace GamesCatalog.Entity
         public int EndTime { get; set; }
         public int CommonStartTime { get; set; }
         public int CommonEndTime { get; set; }
+        public string GameName { get; set; } = "";
+        public string? CoverUrl { get; set; }
     }
 }

@@ -10,6 +10,7 @@ using WPFClient.GameCatalog.Command;
 using WPFClient.GameCatalog.Service;
 using WPFClient.GameCatalog.ViewModel;
 using WPFClient.GameCatalog.Views;
+using WPFClient.Matches.Service;
 using WPFClient.Register.Command;
 using WPFClient.Register.View;
 using WPFClient.Register.ViewModel;

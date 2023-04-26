@@ -1,15 +1,13 @@
 ﻿using System;
+using WPFClient.TimeUtils;
 
 namespace WPFClient.TimeEditor.ViewModel
 {
     public class TimeSelectionViewModel : ViewModelBase
     {
-        private readonly string[] days;
-
         public TimeSelectionViewModel(TimeSpan time)
         {
             Time = time;
-            days = new[] { "Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun" };
         }
 
         private void SetHour(string value)
@@ -48,7 +46,7 @@ namespace WPFClient.TimeEditor.ViewModel
             set { SetField(ref editable, value); }
         }
 
-        public string[] DaysList => days;
+        public string[] DaysList => DaysNamer.Days;
 
 
         // TODO it might be more appropriate to do validation elsewhere, check Behaviours and Validators
@@ -70,9 +68,9 @@ namespace WPFClient.TimeEditor.ViewModel
         }
 
         public string Day {
-            get { return days[Time.Days % days.Length]; } 
+            get { return DaysNamer.Days[Time.Days % DaysNamer.Days.Length]; } 
             set {
-                var dayIndex = Array.IndexOf(days, value);
+                var dayIndex = Array.IndexOf(DaysNamer.Days, value);
                 if (dayIndex < 0)
                 {
                     return;

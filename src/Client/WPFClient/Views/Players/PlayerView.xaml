@@ -19,8 +19,8 @@
             </ListBox.ItemsPanel>
 
             <ListBox.ItemTemplate>
-                <DataTemplate DataType="{x:Type BitmapImage}">
-                    <Image Source="{Binding}" Stretch="UniformToFill" Width="40" Height="50"/>
+                <DataTemplate DataType="{x:Type players:GameMatchViewModel}">
+                    <Image Source="{Binding Cover}" ToolTip="{Binding Name}" Stretch="UniformToFill" Width="40" Height="50"/>
                 </DataTemplate>
             </ListBox.ItemTemplate>
         </ListBox>
@@ -35,8 +35,9 @@
             <ListBox.ItemTemplate>
                 <DataTemplate DataType="{x:Type players:TimeRangeViewModel}">
                     <StackPanel Orientation="Vertical">
-                        <TextBlock Text="{Binding Day}" HorizontalAlignment="Center" />
+                        <TextBlock Text="{Binding StartDay}" HorizontalAlignment="Center" />
                         <TextBlock Text="{Binding StartTime}" HorizontalAlignment="Center" />
+                        <TextBlock Text="{Binding EndDay}" HorizontalAlignment="Center" />
                         <TextBlock Text="{Binding EndTime}" HorizontalAlignment="Center" />
                     </StackPanel>
                 </DataTemplate>

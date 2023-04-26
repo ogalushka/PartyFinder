@@ -26,7 +26,7 @@ namespace WPFClient.TimeEditor.Service
             try
             {
                 using var request = new HttpRequestMessage(HttpMethod.Delete, Url);
-                var timeDto = new TimeDto
+                var timeDto = new TimeWindowDto
                 {
                     StartTime = (int)timeRange.StartTime.TotalMinutes,
                     EndTime = (int)timeRange.EndTime.TotalMinutes
@@ -49,7 +49,7 @@ namespace WPFClient.TimeEditor.Service
             try
             {
                 using var request = new HttpRequestMessage(HttpMethod.Post, Url);
-                var timeDto = new TimeDto
+                var timeDto = new TimeWindowDto
                 {
                     StartTime = (int)timeRange.StartTime.TotalMinutes,
                     EndTime = (int)timeRange.EndTime.TotalMinutes

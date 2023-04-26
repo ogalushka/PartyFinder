@@ -5,6 +5,7 @@ using System.Windows.Media.Imaging;
 using WPFClient.Command;
 using WPFClient.Factory;
 using WPFClient.GameCatalog.ViewModel;
+using WPFClient.Matches.Service;
 using WPFClient.Model;
 using WPFClient.Store;
 using WPFClient.TimeEditor.ViewModel;
@@ -12,17 +13,29 @@ using WPFClient.ViewModel.Players;
 
 namespace WPFClient.ViewModel
 {
-    //TODO correct time view
     public class HomePageViewModel : ViewModelBase
     {
         private readonly User user;
         private readonly CommandFactory commandFactory;
+        private readonly PlayerService playerService;
 
-        public HomePageViewModel(SessionStore sessionStore, CommandFactory commandFactory)
+        public HomePageViewModel(SessionStore sessionStore, CommandFactory commandFactory, PlayerService playerService)
         {
             user = sessionStore.User;
             matchedPlayers = new();
             this.commandFactory = commandFactory;
+            this.playerService = playerService;
+            GetMatches();
+        }
+
+        private async void GetMatches()
+        {
+            matchedPlayers.Clear();
+            var matches = await playerService.GetMatches();
+            foreach (var match in matches)
+            {
+                matchedPlayers.Add(new PlayerViewModel(match));
+            }
         }
 
         #region props

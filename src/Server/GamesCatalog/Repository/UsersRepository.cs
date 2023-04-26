@@ -31,7 +31,7 @@ namespace GamesCatalog.Repository
         public async Task<bool> GameCached(int gameId)
         {
             var query = "SELECT 1 FROM Games WHERE GameId=@GameId;";
-            var param = new Dictionary<string, object>
+            var param = new Dictionary<string, object?>
             {
                 { "@GameId", gameId }
             };
@@ -42,7 +42,7 @@ namespace GamesCatalog.Repository
         public async Task AddGame(string userId, int gameId)
         {
             var query = "INSERT INTO PlayerGame (PlayerId, GameId) Values (@UserId, @GameId);";
-            var param = new Dictionary<string, object>
+            var param = new Dictionary<string, object?>
             {
                 { "@UserId", userId },
                 { "@GameId", gameId }
@@ -53,7 +53,7 @@ namespace GamesCatalog.Repository
         public async Task RemoveGame(string userId, int gameId)
         {
             var query = "DELETE FROM PlayerGame WHERE PlayerId=@UserId AND GameId=@GameId;";
-            var param = new Dictionary<string, object>
+            var param = new Dictionary<string, object?>
             {
                 { "@UserId", userId },
                 { "@GameId", gameId }
@@ -64,7 +64,7 @@ namespace GamesCatalog.Repository
         public async Task AddTimeRange(string userId, TimeWindowDto timeWindow)
         {
             var query = "INSERT INTO PlayerTime (PlayerId, StartTime, EndTime) Values (@UserId, @StartTime, @EndTime);";
-            var param = new Dictionary<string, object>
+            var param = new Dictionary<string, object?>
             {
                 { "@UserId", userId },
                 { "@StartTime", timeWindow.StartTime },
@@ -76,7 +76,7 @@ namespace GamesCatalog.Repository
         public async Task RemoteTimeRange(string userId, TimeWindowDto timeWindow)
         {
             var query = "DELETE FROM PlayerTime WHERE PlayerId=@UserId AND StartTime=@StartTime AND EndTime=EndTime;";
-            var param = new Dictionary<string, object>
+            var param = new Dictionary<string, object?>
             {
                 { "@UserId", userId },
                 { "@StartTime", timeWindow.StartTime },
@@ -85,10 +85,10 @@ namespace GamesCatalog.Repository
             await ExecuteQuerry(query, param);
         }
 
-        public async Task<UserMatchDto[]> GetUserRecomendations(string userId)
+        public async Task<PlayerMatchDto[]> GetUserRecomendations(string userId)
         {
             var query = @"
-SELECT pt2.PlayerId, pg.GameId, pt2.StartTime, pt2.EndTime,
+SELECT pt2.PlayerId, pg.GameId, pt2.StartTime, pt2.EndTime, g.Name as GameName, g.CoverUrl,
 	-- get common start time (max)
 	CASE 
 		WHEN pt1.StartTime > pt2.StartTime 
@@ -114,8 +114,10 @@ JOIN PlayerGame pg
 	AND pg.GameId IN (SELECT GameId FROM PlayerGame WHERE PlayerId = @UserId)
 	-- TODO a way to check filter out small timewindows, 
 	-- considering time windows will be split if they go from sunday to monday
+JOIN Games g 
+	ON pg.GameId = g.GameId
 ";
-            var param = new Dictionary<string, object>
+            var param = new Dictionary<string, object?>
             {
                 { "@UserId", userId },
             };
@@ -123,12 +125,15 @@ JOIN PlayerGame pg
 
             //TODO check if possible to group with SQL
             var parsedRecords = records.Select(r => Field.CastRecord<UserMatch>(r));
-            var result = new Dictionary<string, UserMatchDto>();
+            var result = new Dictionary<string, PlayerMatchDto>();
             foreach (var record in parsedRecords)
             {
                 if (result.TryGetValue(record.PlayerId, out var user))
                 {
-                    user.MatchingGames.Add(record.GameId);
+                    if (!user.MatchingGames.Any(g => g.Id == record.GameId))
+                    {
+                        user.MatchingGames.Add(new GameDto { Id = record.GameId, Name = record.GameName, CoverUrl = record.CoverUrl });
+                    }
                     if (!user.MatchingTimeWindows.Any(w => w.StartTime == record.CommonStartTime && w.EndTime == record.CommonEndTime))
                     {
                         user.MatchingTimeWindows.Add(new TimeWindowDto { StartTime = record.CommonStartTime, EndTime = record.CommonEndTime });
@@ -136,9 +141,13 @@ JOIN PlayerGame pg
                 }
                 else
                 {
-                    var userDto = new UserMatchDto(
+                    var userDto = new PlayerMatchDto(
                         record.PlayerId,
-                        new() { record.GameId },
+                        new() { new GameDto {
+                            Id = record.GameId,
+                            Name = record.GameName,
+                            CoverUrl = record.CoverUrl
+                        }},
                         new() { new TimeWindowDto {
                             StartTime = record.CommonStartTime,
                             EndTime = record.CommonEndTime
@@ -185,7 +194,7 @@ JOIN PlayerGame pg
                 "JOIN Games g " +
                 "ON g.GameId = pg.GameId " +
                 "WHERE pg.PlayerId = @UserId";
-            var param = new Dictionary<string, object>
+            var param = new Dictionary<string, object?>
             {
                 { "@UserId", userId }
             };
@@ -198,7 +207,7 @@ JOIN PlayerGame pg
             var query =
                 "SELECT t.StartTime, t.EndTime FROM PlayerTime t " +
                 "WHERE t.PlayerId = @UserId";
-            var param = new Dictionary<string, object>
+            var param = new Dictionary<string, object?>
             {
                 { "@UserId", userId }
             };

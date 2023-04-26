@@ -22,12 +22,12 @@ namespace GamesCatalog.Controllers
 
         [HttpGet]
         [Route("find")]
-        public async Task<ActionResult<IEnumerable<UserMatchDto>>> Find()
+        public async Task<ActionResult<IEnumerable<PlayerMatchDto>>> Find()
         {
             var userList = await usersRepository.GetUserRecomendations(GetUserId());
 
             //TODO check sorting with database querry
-            var result = userList.Order(Comparer<UserMatchDto>.Create(
+            var result = userList.Order(Comparer<PlayerMatchDto>.Create(
                 (u1, u2) => u1.MatchingGames.Count - u2.MatchingGames.Count)
             );
             return Ok(result);
