@@ -40,6 +40,18 @@ namespace WPFClient.Register.ViewModel
             set { SetField(ref confirmPassword, value); }
         }
 
+        private string userName = "";
+        public string UserName {
+            get { return userName; }
+            set { SetField(ref userName, value); }
+        }
+
+        private string discordId = "";
+        public string DiscordId {
+            get { return discordId; }
+            set { SetField(ref discordId, value); }
+        }
+
         public ICommand RegisterCommand => commandFactory.Get<RegisterCommand>(this);
         public ICommand NavigateLoginCommand => commandFactory.Get<NavigateCommand<LoginViewModel>>();
     }

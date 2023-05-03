@@ -3,6 +3,7 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:parent="clr-namespace:WPFClient.Views"
              xmlns:local="clr-namespace:WPFClient.Views.Players"
              xmlns:players="clr-namespace:WPFClient.ViewModel.Players" 
              d:DataContext="{d:DesignInstance Type=players:PlayerViewModel}"
@@ -43,6 +44,38 @@
                 </DataTemplate>
             </ListBox.ItemTemplate>
         </ListBox>
-
+        <Button HorizontalAlignment="Right" Content="Accept" 
+                Visibility="{Binding RequestButtonVisibility}"
+                Command="{Binding 
+                Path=DataContext.RequestMatch,
+                RelativeSource={RelativeSource FindAncestor,
+                    AncestorType={x:Type parent:HomePage}}
+                }"
+                CommandParameter="{Binding Id}"/>
+        <Button HorizontalAlignment="Right" Content="Accept" 
+                Visibility="{Binding AcceptButtonVisibility}"
+                Command="{Binding 
+                    Path=DataContext.AcceptMatch,
+                    RelativeSource={RelativeSource FindAncestor,
+                        AncestorType={x:Type parent:HomePage}}
+                }"
+                CommandParameter="{Binding Id}"/>
+        <Button HorizontalAlignment="Right" Content="Cancel" 
+                Visibility="{Binding RemoveButtonVisibility}"
+                Command="{Binding 
+                    Path=DataContext.CancelMatch,
+                    RelativeSource={RelativeSource FindAncestor,
+                        AncestorType={x:Type parent:HomePage}}
+                }"
+                CommandParameter="{Binding Id}"/>
+        <TextBlock Text="{Binding DiscordId}" Visibility="{Binding DiscordIdVisibility}" />
+        <Button Content="Copy"
+                Visibility="{Binding DiscordIdVisibility}"
+                Command="{Binding 
+                    Path=DataContext.CopyDiscordId,
+                    RelativeSource={RelativeSource FindAncestor,
+                        AncestorType={x:Type parent:HomePage}}
+                }"
+                CommandParameter="{Binding DiscordId}"/>
     </StackPanel>
 </UserControl>

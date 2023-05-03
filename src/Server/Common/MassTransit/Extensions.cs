@@ -20,11 +20,7 @@ namespace Common.MassTransit
                 bus.AddConsumers(Assembly.GetEntryAssembly());
                 bus.UsingRabbitMq((context, configurator) =>
                 {
-                    var configuration = context.GetService<IConfiguration>();
-                    if (configuration == null)
-                    {
-                        throw new Exception("Cannot resolve IConfiguration service for MassTransit registration");
-                    }
+                    var configuration = context.GetRequiredService<IConfiguration>();
                     var settings = configuration.GetSection(nameof(RabbitMQSettings)).Get<RabbitMQSettings>();
                     if (settings == null)
                     {
@@ -36,6 +32,7 @@ namespace Common.MassTransit
                     {
                         throw new Exception("No serviceSettings section in configuration");
                     }
+
                     configurator.Host(settings.Host);
                     configurator.ConfigureEndpoints(context, new KebabCaseEndpointNameFormatter(serviceSettings.ServiceName, false));
                     configurator.UseMessageRetry(conf =>

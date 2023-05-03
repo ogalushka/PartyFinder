@@ -22,25 +22,22 @@
     <Compile Update="TimeEditor\View\TimeWindowItemView.xaml.cs">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Update="Views\HomePage.xaml.cs">
+    <Compile Update="Matches\View\HomePage.xaml.cs">
       <SubType>Code</SubType>
     </Compile>
     <Compile Update="Views\LoginView.xaml.cs">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Update="Views\Players\GameView.xaml.cs">
+    <Compile Update="Matches\View\Players\GameView.xaml.cs">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Update="Views\Players\PlayerView.xaml.cs">
+    <Compile Update="Matches\View\Players\PlayerView.xaml.cs">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Update="Views\Players\TimeRangeView.xaml.cs">
+    <Compile Update="Matches\View\Players\TimeRangeView.xaml.cs">
       <SubType>Code</SubType>
     </Compile>
     <Compile Update="Views\Preloader.xaml.cs">
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Update="Views\ProfileView.xaml.cs">
       <SubType>Code</SubType>
     </Compile>
   </ItemGroup>
@@ -63,25 +60,22 @@
     <Page Update="TimeEditor\View\TimeWindowItemView.xaml">
       <SubType>Designer</SubType>
     </Page>
-    <Page Update="Views\HomePage.xaml">
+    <Page Update="Matches\View\HomePage.xaml">
       <SubType>Designer</SubType>
     </Page>
     <Page Update="Views\LoginView.xaml">
       <SubType>Designer</SubType>
     </Page>
-    <Page Update="Views\Players\GameView.xaml">
+    <Page Update="Matches\View\Players\GameView.xaml">
       <SubType>Designer</SubType>
     </Page>
-    <Page Update="Views\Players\PlayerView.xaml">
+    <Page Update="Matches\View\Players\PlayerView.xaml">
       <SubType>Designer</SubType>
     </Page>
-    <Page Update="Views\Players\TimeRangeView.xaml">
+    <Page Update="Matches\View\Players\TimeRangeView.xaml">
       <SubType>Designer</SubType>
     </Page>
     <Page Update="Views\Preloader.xaml">
-      <SubType>Designer</SubType>
-    </Page>
-    <Page Update="Views\ProfileView.xaml">
       <SubType>Designer</SubType>
     </Page>
   </ItemGroup>

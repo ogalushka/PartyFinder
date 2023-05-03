@@ -33,6 +33,9 @@ CREATE TABLE PlayerTime (
 )
 GO
 
-
-
-
+CREATE TABLE PlayerRequest (
+	RequestorId varchar(100) NOT NULL,
+	ReceiverId varchar(100) NOT NULL,
+	PRIMARY KEY (RequestorId, ReceiverId)
+	)
+GO

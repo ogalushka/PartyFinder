@@ -1,20 +1,24 @@
-﻿using Common.Mongo;
-using Identity.Entity;
-using System.Linq.Expressions;
+﻿using Identity.Entity;
 using System.Security.Cryptography;
 using System.Text;
 using System.Text.Json;
 
 namespace Identity.Repository
 {
-    //TODO better interface or remove it completly, move users to DB
-    public class UserRepository : IRepository<string, User>
+    public class UserRepository
     {
-        private static string UserHash(string username) => Convert.ToBase64String(MD5.HashData(Encoding.UTF8.GetBytes(username)));
+        private static string UserHash(string username) {
+            var hash = Convert.ToBase64String(MD5.HashData(Encoding.UTF8.GetBytes(username)));
+            hash = hash.Replace(@"\", "");
+            hash = hash.Replace(@"/", "");
+            return hash;
+        }
 
-        public async Task<User> Get(string username)
+        public async Task<User> Get(string email)
         {
-            var hash = UserHash(username);
+            Console.WriteLine(email);
+            var hash = UserHash(email.ToString());
+            Console.WriteLine(hash);
             if (!File.Exists(hash))
             {
                 throw new ApplicationException("User not found");
@@ -31,39 +35,16 @@ namespace Identity.Repository
 
         public async Task Create(User user)
         {
-            var hash = UserHash(user.Username);
+            Console.WriteLine(user.Email);
+            var hash = UserHash(user.Email);
+            Console.WriteLine(hash);
             if (File.Exists(hash))
             {
                 throw new ApplicationException("User already exists");
             }
+
             await using var writer = File.OpenWrite(hash);
             await JsonSerializer.SerializeAsync(writer, user);
         }
-
-        public Task<IReadOnlyCollection<User>> GetAll()
-        {
-            throw new NotImplementedException();
-        }
-
-        public Task<IReadOnlyCollection<User>> GetAll(Expression<Func<User, bool>> filter)
-        {
-            throw new NotImplementedException();
-        }
-
-        public Task Remove(string id)
-        {
-            throw new NotImplementedException();
-        }
-
-        public Task Update(User enitity)
-        {
-            throw new NotImplementedException();
-        }
-
-        public Task<User> Get(Expression<Func<User, bool>> filter)
-        {
-            throw new NotImplementedException();
-        }
     }
-
 }

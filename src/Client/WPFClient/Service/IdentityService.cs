@@ -42,15 +42,21 @@ namespace WPFClient.Service
                 httpClientHandler.CookieContainer.Add(cookie);
             }
 
-            return await GetUserProfile();
+            var userProfileRetrieved = await GetUserProfile();
+            if (!userProfileRetrieved)
+            {
+                persistentStorage.ClearCookies();
+            }
+
+            return userProfileRetrieved;
         }
 
-        public async Task<bool> TryRegister(string email, string password)
+        public async Task<bool> TryRegister(string email, string password, string username, string discrodId)
         {
             try
             {
-                var uri = new Uri($"http://localhost:5189/?username={email}&password={password}");
-                var result = await httpClient.GetAsync(uri);
+                var uri = new Uri($"http://localhost:5189/register");
+                var result = await httpClient.PostAsJsonAsync(uri, new RegistrationDto(username, email, password, discrodId));
                 result.EnsureSuccessStatusCode();
 
                 var loginCookies = httpClientHandler.CookieContainer.GetAllCookies();
@@ -70,7 +76,7 @@ namespace WPFClient.Service
         {
             try
             {
-                var uri = new Uri($"http://localhost:5189/login?username={email}&password={password}");
+                var uri = new Uri($"http://localhost:5189/login?email={email}&password={password}");
 
                 var result = await httpClient.GetAsync(uri);
                 result.EnsureSuccessStatusCode();

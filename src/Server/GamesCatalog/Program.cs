@@ -2,6 +2,7 @@ using GamesCatalog.Http;
 using GamesCatalog.Repository;
 using Microsoft.AspNetCore.DataProtection;
 using Microsoft.AspNetCore.Authentication.Cookies;
+using Common.MassTransit;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -15,7 +16,10 @@ builder.Services.AddSingleton<UsersRepository>();
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
+// TODO move api url to config
 builder.Services.AddHttpClient<GamesHttpClient>(client => client.BaseAddress = new Uri("https://api.rawg.io/"));
+builder.Services.AddMassTransitWithRabitMq();
+
 var app = builder.Build();
 
 if (app.Environment.IsDevelopment())

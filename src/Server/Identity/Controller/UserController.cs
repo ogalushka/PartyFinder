@@ -1,5 +1,8 @@
-﻿using Identity.Entity;
+﻿using Identity.Contracts;
+using Identity.Dto;
+using Identity.Entity;
 using Identity.Repository;
+using MassTransit;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authorization;
@@ -15,16 +18,18 @@ namespace Identity.Controller
         private readonly UserRepository repository;
         private readonly IPasswordHasher<User> passwordHasher;
         private readonly IDataProtectionProvider protectionProvider;
-        //private readonly UserManager<IdentityUser> userManager;
-        //private readonly SignInManager<IdentityUser> signInManager;
+        private readonly IPublishEndpoint publishEndpoint;
 
-        public UserController(UserRepository repository, IPasswordHasher<User> passwordHasher, IDataProtectionProvider protectionProvider/*, UserManager<IdentityUser> userManager, SignInManager<IdentityUser> signInManager*/)
+        public UserController(
+            UserRepository repository,
+            IPasswordHasher<User> passwordHasher,
+            IDataProtectionProvider protectionProvider,
+            IPublishEndpoint publishEndpoint)
         {
             this.repository = repository;
             this.passwordHasher = passwordHasher;
             this.protectionProvider = protectionProvider;
-            //this.userManager = userManager;
-            //this.signInManager = signInManager;
+            this.publishEndpoint = publishEndpoint;
         }
 
         [HttpGet]
@@ -33,6 +38,8 @@ namespace Identity.Controller
         {
             var user = new User();
             user.Username = username;
+            user.Email = username;
+            user.Id = Guid.NewGuid();
             user.PasswordHash = passwordHasher.HashPassword(user, password);
             await repository.Create(user);
 
@@ -41,14 +48,38 @@ namespace Identity.Controller
                     Convert(user)
                 );
 
-            return Ok();
+            await publishEndpoint.Publish(new UserRegistered(user.Id, user.Username, user.Email, user.DiscordId));
+            return NoContent();
+        }
+
+        [HttpPost]
+        [Route("/register")]
+        public async Task<IActionResult> Register2([FromBody] RegistrationDto registrationDto)
+        {
+            var user = new User();
+            user.Id = Guid.NewGuid();
+            user.Username = registrationDto.UserName;
+            user.DiscordId = registrationDto.DiscordId;
+            user.Email = registrationDto.Email;
+            user.PasswordHash = passwordHasher.HashPassword(user, registrationDto.Password);
+
+            await repository.Create(user);
+
+            await HttpContext.SignInAsync(
+                CookieAuthenticationDefaults.AuthenticationScheme,
+                Convert(user)
+                );
+
+            await publishEndpoint.Publish(new UserRegistered(user.Id, user.Username, user.Email, user.DiscordId));
+
+            return NoContent();
         }
 
         [HttpGet]
         [Route("/login")]
-        public async Task<ActionResult> Login(string username, string password)
+        public async Task<ActionResult> Login(string email, string password)
         {
-            var user = await repository.Get(username);
+            var user = await repository.Get(email);
             if (user == null)
             {
                 return BadRequest();
@@ -65,26 +96,11 @@ namespace Identity.Controller
                     CookieAuthenticationDefaults.AuthenticationScheme,
                     Convert(user)
                 );
-            return Ok("Logged in!");
+
+            return NoContent();
         }
 
-        [HttpGet]
-        [Route("/promote")]
-        public async Task<ActionResult> Promote(string username)
-        {
-            var user = await repository.Get(username);
-            if (user == null)
-            {
-                return BadRequest();
-            }
-
-            user.Claims.Add(new UserClaim() { Type = "role", Value = "manager" });
-
-            await repository.Create(user);
-
-            return Ok("Promoted!");
-        }
-
+        // TODO sample stuff
         [HttpGet]
         [Route("/start-password-reset")]
         public async Task<ActionResult> PasswordResetStart(string username)
@@ -143,7 +159,7 @@ namespace Identity.Controller
         {
             var claims = new List<Claim>()
             {
-                new Claim("username", user.Username)
+                new Claim("Id", user.Id.ToString())
             };
 
             claims.AddRange(user.Claims.Select(c => new Claim(c.Type, c.Value)));

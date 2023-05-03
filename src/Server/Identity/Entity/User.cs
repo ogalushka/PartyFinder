@@ -2,12 +2,14 @@
 
 namespace Identity.Entity
 {
-    public class User : IEntity<string>
+    public class User
     {
         public string Username { get; set; } = "";
         public string PasswordHash { get; set; } = "";
+        public string Email { get; set; } = "";
+        public string DiscordId { get; set; } = "";
         public List<UserClaim> Claims { get; set; } = new();
-        public string Id { get; set; } = "";
+        public Guid Id { get; set; }
     }
 
     public class UserClaim 

@@ -7,6 +7,8 @@ using WPFClient.Store;
 
 namespace WPFClient.TimeEditor.ViewModel
 {
+    // TODO add custom component for time range selection
+    // Idea: Its a line of the whole week where you edit time ranges by dragging
     public class TimeEditorItemViewModel : ViewModelBase, INotifyDataErrorInfo
     {
         private const int MinWindowTimeMinutes = 30;

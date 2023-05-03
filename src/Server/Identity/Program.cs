@@ -1,3 +1,4 @@
+using Common.MassTransit;
 using Identity.Entity;
 using Identity.Repository;
 using Microsoft.AspNetCore.Authentication;
@@ -26,6 +27,7 @@ builder.Services.AddControllers();
 
 builder.Services.AddSingleton<UserRepository>();
 builder.Services.AddSingleton<IPasswordHasher<User>, PasswordHasher<User>>();
+builder.Services.AddMassTransitWithRabitMq();
 
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();

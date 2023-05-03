@@ -30,18 +30,5 @@ namespace WPFClient.ViewModel
                 navigation.SetViewModel<LoginViewModel>();
             }
         }
-
-        private async void TryGetUserLoggedInUser()
-        {
-            var userLoggedIn = await identityService.GetUserData();
-            if (userLoggedIn)
-            {
-                navigation.SetViewModel<HomePageViewModel>();
-            }
-            else
-            {
-                navigation.SetViewModel<LoginViewModel>();
-            }
-        }
     }
 }

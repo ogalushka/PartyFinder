@@ -29,6 +29,10 @@
             <TextBlock Text="Registration" />
             <TextBlock Text="Email:" />
             <TextBox Text="{Binding Email}" />
+            <TextBlock Text="User name:" />
+            <TextBox Text="{Binding UserName}" />
+            <TextBlock Text="Discord ID:" />
+            <TextBox Text="{Binding DiscordId}" />
             <TextBlock Text="Password" />
             <!--Binding Password-->
             <PasswordBox PasswordChanged="PasswordBox_PasswordChanged"/>

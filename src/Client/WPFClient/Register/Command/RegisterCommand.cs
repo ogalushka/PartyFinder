@@ -28,6 +28,8 @@ namespace WPFClient.Register.Command
             return base.CanExecute(parameter) 
                 && !string.IsNullOrEmpty(viewModel.Email)
                 && !string.IsNullOrEmpty(viewModel.Password)
+                && !string.IsNullOrEmpty(viewModel.DiscordId)
+                && !string.IsNullOrEmpty(viewModel.UserName)
                 && viewModel.Password == viewModel.ConfirmPassword;
         }
 
@@ -36,7 +38,7 @@ namespace WPFClient.Register.Command
             viewModel.IsLoading = true;
             try
             {
-                var registered = await identityService.TryRegister(viewModel.Email, viewModel.Password);
+                var registered = await identityService.TryRegister(viewModel.Email, viewModel.Password, viewModel.UserName, viewModel.DiscordId);
                 if (registered)
                 {
                     navigation.SetViewModel<HomePageViewModel>();

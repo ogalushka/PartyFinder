@@ -15,6 +15,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Identity", "Server\Identity
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "GamesCatalog", "Server\GamesCatalog\GamesCatalog.csproj", "{03C11EBD-A2DC-4330-B06C-ADC36ECA4967}"
 EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Identity.Contracts", "Server\Identity.Contracts\Identity.Contracts.csproj", "{E3E3DB16-0537-44BA-BA19-E76C7ECBC9DA}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -37,6 +39,10 @@ Global
 		{03C11EBD-A2DC-4330-B06C-ADC36ECA4967}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{03C11EBD-A2DC-4330-B06C-ADC36ECA4967}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{03C11EBD-A2DC-4330-B06C-ADC36ECA4967}.Release|Any CPU.Build.0 = Release|Any CPU
+		{E3E3DB16-0537-44BA-BA19-E76C7ECBC9DA}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{E3E3DB16-0537-44BA-BA19-E76C7ECBC9DA}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{E3E3DB16-0537-44BA-BA19-E76C7ECBC9DA}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{E3E3DB16-0537-44BA-BA19-E76C7ECBC9DA}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -46,6 +52,7 @@ Global
 		{8E8B7D47-CB4E-49D4-957D-C9CE40AD7A86} = {39CAC625-B32F-46AE-B200-1C60AE18F6CA}
 		{41072AE0-577A-436A-9C0E-6D8DF0333213} = {39CAC625-B32F-46AE-B200-1C60AE18F6CA}
 		{03C11EBD-A2DC-4330-B06C-ADC36ECA4967} = {39CAC625-B32F-46AE-B200-1C60AE18F6CA}
+		{E3E3DB16-0537-44BA-BA19-E76C7ECBC9DA} = {39CAC625-B32F-46AE-B200-1C60AE18F6CA}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {309CA496-719B-4537-B5DA-810CC0E670A9}

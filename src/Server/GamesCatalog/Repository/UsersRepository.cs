@@ -16,7 +16,7 @@ namespace GamesCatalog.Repository
 
         public async Task AddGame(string userId, int gameId, string name, string? coverUrl)
         {
-            var query = "INSERT INTO Games (GameId, Name, CoverUrl) Values (@GameId, @Name, @CoverUrl);" + 
+            var query = "INSERT INTO Games (GameId, Name, CoverUrl) Values (@GameId, @Name, @CoverUrl);" +
                 "INSERT INTO PlayerGame (PlayerId, GameId) Values (@UserId, @GameId);";
             var param = new Dictionary<string, object?>
             {
@@ -60,7 +60,7 @@ namespace GamesCatalog.Repository
             };
             await ExecuteQuerry(query, param);
         }
-        
+
         public async Task AddTimeRange(string userId, TimeWindowDto timeWindow)
         {
             var query = "INSERT INTO PlayerTime (PlayerId, StartTime, EndTime) Values (@UserId, @StartTime, @EndTime);";
@@ -85,10 +85,11 @@ namespace GamesCatalog.Repository
             await ExecuteQuerry(query, param);
         }
 
+        // TODO limit
         public async Task<PlayerMatchDto[]> GetUserRecomendations(string userId)
         {
             var query = @"
-SELECT pt2.PlayerId, pg.GameId, pt2.StartTime, pt2.EndTime, g.Name as GameName, g.CoverUrl,
+SELECT pt2.PlayerId, pg.GameId, pt2.StartTime, pt2.EndTime, g.Name as GameName, g.CoverUrl, pc.DiscordId, pc.Name,
 	-- get common start time (max)
 	CASE 
 		WHEN pt1.StartTime > pt2.StartTime 
@@ -116,6 +117,8 @@ JOIN PlayerGame pg
 	-- considering time windows will be split if they go from sunday to monday
 JOIN Games g 
 	ON pg.GameId = g.GameId
+JOIN PlayerInfo pc
+	ON pt2.PlayerId = pc.Id
 ";
             var param = new Dictionary<string, object?>
             {
@@ -143,6 +146,7 @@ JOIN Games g
                 {
                     var userDto = new PlayerMatchDto(
                         record.PlayerId,
+                        record.Name,
                         new() { new GameDto {
                             Id = record.GameId,
                             Name = record.GameName,
@@ -152,7 +156,8 @@ JOIN Games g
                             StartTime = record.CommonStartTime,
                             EndTime = record.CommonEndTime
                             }
-                        });
+                        },
+                        new PlayerContacts(record.DiscordId));
                     result.Add(record.PlayerId, userDto);
                 }
             }
@@ -164,7 +169,7 @@ JOIN Games g
         private async Task<List<Dictionary<string, Field>>> ExecuteQuerry(string query, Dictionary<string, object?> queryParams)
         {
             var records = new List<Dictionary<string, Field>>();
-            
+
             using var connection = new SqlConnection(Connection);
             await connection.OpenAsync();
             await connection.ChangeDatabaseAsync(DataBaseName);
@@ -215,6 +220,70 @@ JOIN Games g
             var records = await ExecuteQuerry(query, param);
 
             return records.Select(r => Field.CastRecord<TimeWindowDto>(r)).ToArray();
+        }
+
+        public async Task<string[]> GetRequestedPlayers(string userId)
+        {
+            var query = "SELECT ReceiverId FROM PlayerRequest WHERE RequestorId = @UserId";
+            var param = new Dictionary<string, object?>()
+            {
+                { "@UserId", userId }
+            };
+
+            var result = await ExecuteQuerry(query, param);
+            // TODO fix parse
+            return result.Select(r => r.First().Value.Value).Cast<string>().ToArray();
+        }
+
+
+        public async Task<string[]> GetReceivedInvitations(string userId)
+        {
+            var query = "SELECT RequestorId FROM PlayerRequest WHERE ReceiverId = @UserId";
+            var param = new Dictionary<string, object?>()
+            {
+                { "@UserId", userId }
+            };
+
+            var result = await ExecuteQuerry(query, param);
+            // TODO fix parse
+            return result.Select(r => r.First().Value.Value).Cast<string>().ToArray();
+        }
+
+        public async Task RemoveMatchRequest(string requestorId, string receiverId)
+        {
+            var query = "DELETE FROM PlayerRequest WHERE RequestorId=@RequestorId AND ReceiverId=@ReceiverId;";
+            var param = new Dictionary<string, object?>
+            {
+                { "@RequestorId", requestorId },
+                { "@ReceiverId", receiverId }
+            };
+
+            await ExecuteQuerry(query, param);
+        }
+
+        public async Task AddUserContacts(string userId, string name, string discordId)
+        {
+            var query = "INSERT INTO PlayerInfo (Id, Name, DiscordId) VALUES (@PlayerId, @Name, @DiscordId);";
+            var param = new Dictionary<string, object?>
+            {
+                { "@PlayerId", userId },
+                { "@DiscordId", discordId },
+                { "@Name", name }
+            };
+
+            await ExecuteQuerry(query, param);
+        }
+
+        public async Task AddMatchRequest(string requestorId, string receiverId)
+        {
+            var query = "INSERT INTO PlayerRequest (RequestorId, ReceiverId) Values (@RequestorId, @ReceiverId);";
+            var param = new Dictionary<string, object?>
+            {
+                { "@RequestorId", requestorId },
+                { "@ReceiverId", receiverId }
+            };
+
+            await ExecuteQuerry(query, param);
         }
     }
 

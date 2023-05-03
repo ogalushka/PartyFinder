@@ -10,6 +10,8 @@ using WPFClient.GameCatalog.Command;
 using WPFClient.GameCatalog.Service;
 using WPFClient.GameCatalog.ViewModel;
 using WPFClient.GameCatalog.Views;
+using WPFClient.Matches;
+using WPFClient.Matches.Command;
 using WPFClient.Matches.Service;
 using WPFClient.Register.Command;
 using WPFClient.Register.View;
@@ -27,6 +29,7 @@ namespace WPFClient
 {
     public partial class App : Application
     {
+        // TODO Keyboard navigations
         private IContainer? container;
 
         protected override void OnStartup(StartupEventArgs e)
@@ -89,6 +92,9 @@ namespace WPFClient
             builder.RegisterType<ToggleGameCommand>();
             builder.RegisterType<DeleteTimeRangeCommand>();
             builder.RegisterType<RegisterCommand>();
+            builder.RegisterType<SendMatchRequestCommand>();
+            builder.RegisterType<CancelMatchCommand>();
+            builder.RegisterType<AcceptMatchCommand>();
 
             builder.RegisterType<SessionStore>();
             return builder.Build();
