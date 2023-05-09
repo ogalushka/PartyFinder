@@ -36,6 +36,14 @@ GO
 CREATE TABLE PlayerRequest (
 	RequestorId varchar(100) NOT NULL,
 	ReceiverId varchar(100) NOT NULL,
-	PRIMARY KEY (RequestorId, ReceiverId)
+	PRIMARY KEY (RequestorId, ReceiverId),
+	)
+GO
+
+CREATE TABLE PlayerInfo (
+	Id varchar(100) NOT NULL,
+	Name varchar (100) NOT NULL,
+	DiscordId varchar(100) NOT NULL,
+	PRIMARY KEY (Id)
 	)
 GO
