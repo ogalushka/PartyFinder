@@ -3,6 +3,7 @@ using GamesCatalog.Http;
 using GamesCatalog.Repository;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using System.Security.Claims;
 
 namespace GamesCatalog.Controllers
 {
@@ -24,6 +25,7 @@ namespace GamesCatalog.Controllers
         [Route("find")]
         public async Task<ActionResult<IEnumerable<PlayerMatchDto>>> Find()
         {
+            Console.WriteLine("in find");
             var currentUser = GetUserId();
             var requestedIdsList = await usersRepository.GetRequestedPlayers(currentUser);
             var receivedIdsList = await usersRepository.GetReceivedInvitations(currentUser);
@@ -154,7 +156,7 @@ namespace GamesCatalog.Controllers
 
         private string GetUserId()
         {
-            return HttpContext.User.Claims.First(kv => kv.Type == "Id").Value;
+            return HttpContext.User.Claims.First(kv => kv.Type == ClaimTypes.NameIdentifier).Value;
         }
     }
 }
