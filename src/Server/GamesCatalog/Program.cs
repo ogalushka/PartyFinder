@@ -1,18 +1,15 @@
 using GamesCatalog.Http;
 using GamesCatalog.Repository;
-using Microsoft.AspNetCore.DataProtection;
-using Microsoft.AspNetCore.Authentication.Cookies;
 using Common.MassTransit;
 using Microsoft.AspNetCore.Identity;
+using Common.Keys;
 
 var builder = WebApplication.CreateBuilder(args);
 
-// Add services to the container.
-builder.Services.AddDataProtection().SetApplicationName("unique2").PersistKeysToFileSystem(new DirectoryInfo("../keys"));
+builder.Services.AddKeysStorage(builder.Configuration.GetConnectionString("Keys"));
 builder.Services.AddAuthorization();
 builder.Services.AddAuthentication(IdentityConstants.ApplicationScheme).AddCookie(IdentityConstants.ApplicationScheme);
 
-//builder.Services.AddDbContext<DbContext>(options => options.UseSqlServer(""));
 builder.Services.AddSingleton<UsersRepository>();
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();

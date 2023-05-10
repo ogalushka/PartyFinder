@@ -1,15 +1,16 @@
+using Common.Keys;
 using Common.MassTransit;
 using Identity.Entity;
 using Identity.Repository;
-using Microsoft.AspNetCore.DataProtection;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
-//TODO save to keys database
 
-builder.Services.AddDbContext<IdentityRepository>(c =>
-        c.UseSqlServer(builder.Configuration.GetConnectionString("Default"))
+builder.Services.AddKeysStorage(builder.Configuration.GetConnectionString("Keys"));
+
+builder.Services.AddDbContext<IdentityDbContext>(c =>
+        c.UseSqlServer(builder.Configuration.GetConnectionString("Identity"))
     );
 builder.Services.AddIdentity<ApplicationUser, IdentityRole>(o =>
 {
@@ -23,10 +24,9 @@ builder.Services.AddIdentity<ApplicationUser, IdentityRole>(o =>
         o.Password.RequireNonAlphanumeric = false;
     }
 })
-    .AddEntityFrameworkStores<IdentityRepository>()
+    .AddEntityFrameworkStores<IdentityDbContext>()
     .AddDefaultTokenProviders();
 
-builder.Services.AddDataProtection().SetApplicationName("unique2").PersistKeysToFileSystem(new DirectoryInfo("../keys"));
 
 builder.Services.AddControllers();
 

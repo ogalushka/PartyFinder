@@ -42,7 +42,6 @@ namespace Identity.Controller
             }
 
             await signInManager.SignInAsync(user, true);
-            //ClaimTypes.NameIdentifier;
             
             await publishEndpoint.Publish(new UserRegistered(Guid.Parse(user.Id), user.UserName, user.Email, user.DiscordId));
             return Results.Ok();
