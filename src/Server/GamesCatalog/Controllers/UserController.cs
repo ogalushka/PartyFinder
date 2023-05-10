@@ -1,8 +1,10 @@
-﻿using GamesCatalog.Dto;
+﻿using GamesCatalog.Database;
+using GamesCatalog.Dto;
 using GamesCatalog.Http;
 using GamesCatalog.Repository;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using System.Security.Claims;
 
 namespace GamesCatalog.Controllers
@@ -14,11 +16,13 @@ namespace GamesCatalog.Controllers
     {
         private readonly UsersRepository usersRepository;
         private readonly GamesHttpClient gamesClient;
+        private readonly PlayersDbContext dbContext;
 
-        public UserController(UsersRepository usersRepository, GamesHttpClient gamesClient)
+        public UserController(UsersRepository usersRepository, GamesHttpClient gamesClient, PlayersDbContext dbContext)
         {
             this.usersRepository = usersRepository;
             this.gamesClient = gamesClient;
+            this.dbContext = dbContext;
         }
 
         [HttpGet]
@@ -106,9 +110,23 @@ namespace GamesCatalog.Controllers
 
         [HttpGet]
         [Route("games")]
-        public async Task<ActionResult<GameDto[]>> GetGames()
+        public async Task<ActionResult<List<GameDto>>> GetGames()
         {
-            return await usersRepository.GetGames(GetUserId());
+            var games = await dbContext.PlayerInfoGame
+                .Where(pg => pg.PlayerInfoId == GetUserGuid())
+                .Join(
+                    dbContext.Games,
+                    pg => pg.GameId,
+                    g => g.Id,
+                    (pg, g) => new GameDto
+                    {
+                        Id = g.Id,
+                        Name = g.Name,
+                        CoverUrl = g.CoverUrl
+                    })
+                .ToListAsync();
+
+            return Ok(games);
         }
 
         [HttpPost]
@@ -116,16 +134,25 @@ namespace GamesCatalog.Controllers
         public async Task<IActionResult> AddGame(int gameId)
         {
             // TODO add recache if record is old
-            var isGameCached = await usersRepository.GameCached(gameId);
-            if (isGameCached)
+            var game = await dbContext.Games.SingleOrDefaultAsync(g => g.Id == gameId);
+            var player = new PlayerInfo { Id = GetUserGuid() };
+            dbContext.PlayerInfo.Attach(player);
+
+            if (game == null)
             {
-                await usersRepository.AddGame(GetUserId(), gameId);
+                var newGame = await gamesClient.GetGame(gameId);
+                game = new Game 
+                { 
+                    Id = newGame.Id,
+                    Name = newGame.Name,
+                    CoverUrl = newGame.CoverUrl
+                };
+                dbContext.Games.Add(game);
             }
-            else
-            {
-                var games = await gamesClient.GetGame(gameId);
-                await usersRepository.AddGame(GetUserId(), gameId, games.Name, games.CoverUrl);
-            }
+
+            player.Games.Add(game);
+            await dbContext.SaveChangesAsync();
+
             return Ok();
         }
 
@@ -133,7 +160,8 @@ namespace GamesCatalog.Controllers
         [Route("games")]
         public async Task<IActionResult> RemoveGame(int gameId)
         {
-            await usersRepository.RemoveGame(GetUserId(), gameId);
+            dbContext.PlayerInfoGame.Remove(new PlayerInfoGame { PlayerInfoId = GetUserGuid(), GameId = gameId });
+            await dbContext.SaveChangesAsync();
             return Ok();
         }
 
@@ -157,6 +185,11 @@ namespace GamesCatalog.Controllers
         private string GetUserId()
         {
             return HttpContext.User.Claims.First(kv => kv.Type == ClaimTypes.NameIdentifier).Value;
+        }
+
+        private Guid GetUserGuid()
+        {
+            return Guid.Parse(HttpContext.User.Claims.First(kv => kv.Type == ClaimTypes.NameIdentifier).Value);
         }
     }
 }

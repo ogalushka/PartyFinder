@@ -10,45 +10,9 @@ namespace GamesCatalog.Repository
         // TODO move to config
         // TODO multiple repositories
         // TODO api and db objects separation
-        public static string DataBaseName = "Players";
+        public static string DataBaseName = "Players2";
         public static string Connection = "Server=localhost,1433;User Id=sa;Password=change_this_password;";
         public UsersRepository() { }
-
-        public async Task AddGame(string userId, int gameId, string name, string? coverUrl)
-        {
-            var query = "INSERT INTO Games (GameId, Name, CoverUrl) Values (@GameId, @Name, @CoverUrl);" +
-                "INSERT INTO PlayerGame (PlayerId, GameId) Values (@UserId, @GameId);";
-            var param = new Dictionary<string, object?>
-            {
-                { "@UserId", userId },
-                { "@GameId", gameId },
-                { "@Name", name },
-                { "@CoverUrl", coverUrl }
-            };
-            await ExecuteQuerry(query, param);
-        }
-
-        public async Task<bool> GameCached(int gameId)
-        {
-            var query = "SELECT 1 FROM Games WHERE GameId=@GameId;";
-            var param = new Dictionary<string, object?>
-            {
-                { "@GameId", gameId }
-            };
-            var result = await ExecuteQuerry(query, param);
-            return result.Count > 0;
-        }
-
-        public async Task AddGame(string userId, int gameId)
-        {
-            var query = "INSERT INTO PlayerGame (PlayerId, GameId) Values (@UserId, @GameId);";
-            var param = new Dictionary<string, object?>
-            {
-                { "@UserId", userId },
-                { "@GameId", gameId }
-            };
-            await ExecuteQuerry(query, param);
-        }
 
         public async Task RemoveGame(string userId, int gameId)
         {
@@ -256,19 +220,6 @@ JOIN PlayerInfo pc
             {
                 { "@RequestorId", requestorId },
                 { "@ReceiverId", receiverId }
-            };
-
-            await ExecuteQuerry(query, param);
-        }
-
-        public async Task AddUserContacts(string userId, string name, string discordId)
-        {
-            var query = "INSERT INTO PlayerInfo (Id, Name, DiscordId) VALUES (@PlayerId, @Name, @DiscordId);";
-            var param = new Dictionary<string, object?>
-            {
-                { "@PlayerId", userId },
-                { "@DiscordId", discordId },
-                { "@Name", name }
             };
 
             await ExecuteQuerry(query, param);

@@ -3,12 +3,15 @@ using GamesCatalog.Repository;
 using Common.MassTransit;
 using Microsoft.AspNetCore.Identity;
 using Common.Keys;
+using GamesCatalog.Database;
+using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddKeysStorage(builder.Configuration.GetConnectionString("Keys"));
 builder.Services.AddAuthorization();
 builder.Services.AddAuthentication(IdentityConstants.ApplicationScheme).AddCookie(IdentityConstants.ApplicationScheme);
+builder.Services.AddDbContext<PlayersDbContext>(o => o.UseSqlServer(builder.Configuration.GetConnectionString("Players")));
 
 builder.Services.AddSingleton<UsersRepository>();
 builder.Services.AddControllers();

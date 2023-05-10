@@ -1,4 +1,4 @@
-﻿using GamesCatalog.Repository;
+﻿using GamesCatalog.Database;
 using Identity.Contracts;
 using MassTransit;
 
@@ -6,19 +6,23 @@ namespace GamesCatalog.Consumers
 {
     public class UserRegisteredConsumer : IConsumer<UserRegistered>
     {
-        private readonly UsersRepository repository;
+        private readonly PlayersDbContext playersDbContext;
 
-        public UserRegisteredConsumer(UsersRepository repository)
+        public UserRegisteredConsumer(PlayersDbContext playersDbContext)
         {
-            this.repository = repository;
+            this.playersDbContext = playersDbContext;
         }
 
-        public async Task Consume(ConsumeContext<UserRegistered> context)
+        public Task Consume(ConsumeContext<UserRegistered> context)
         {
             var userData = context.Message;
-
-            // TODO checkout db integration with GUID type
-            await repository.AddUserContacts(userData.Id.ToString(), userData.Name, userData.Discord);
+            playersDbContext.PlayerInfo.Add(new PlayerInfo
+            {
+                Id = userData.Id,
+                Name = userData.Name,
+                DiscordId = userData.Discord
+            });
+            return playersDbContext.SaveChangesAsync();
         }
     }
 }

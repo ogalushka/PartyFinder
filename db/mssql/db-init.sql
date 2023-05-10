@@ -1,13 +1,13 @@
 USE master
 GO
 
-IF DB_ID('Players') IS NOT NULL
+IF DB_ID('Players2') IS NOT NULL
   set noexec on
 
-CREATE DATABASE Players;
+CREATE DATABASE Players2;
 GO
 
-USE Players
+USE Players2
 GO
 
 CREATE TABLE Games (
