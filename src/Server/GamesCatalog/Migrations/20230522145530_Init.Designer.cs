@@ -12,8 +12,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace GamesCatalog.Migrations
 {
     [DbContext(typeof(PlayersDbContext))]
-    [Migration("20230510145532_Initial")]
-    partial class Initial
+    [Migration("20230522145530_Init")]
+    partial class Init
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -24,21 +24,6 @@ namespace GamesCatalog.Migrations
                 .HasAnnotation("Relational:MaxIdentifierLength", 128);
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder);
-
-            modelBuilder.Entity("GamePlayerInfo", b =>
-                {
-                    b.Property<int>("GamesId")
-                        .HasColumnType("int");
-
-                    b.Property<Guid>("PlayerInfoId")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.HasKey("GamesId", "PlayerInfoId");
-
-                    b.HasIndex("PlayerInfoId");
-
-                    b.ToTable("GamePlayerInfo");
-                });
 
             modelBuilder.Entity("GamesCatalog.Database.Game", b =>
                 {
@@ -80,11 +65,45 @@ namespace GamesCatalog.Migrations
                     b.ToTable("PlayerInfo");
                 });
 
-            modelBuilder.Entity("GamePlayerInfo", b =>
+            modelBuilder.Entity("GamesCatalog.Database.PlayerInfoGame", b =>
+                {
+                    b.Property<int>("GameId")
+                        .HasColumnType("int");
+
+                    b.Property<Guid>("PlayerInfoId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.HasKey("GameId", "PlayerInfoId");
+
+                    b.HasIndex("PlayerInfoId");
+
+                    b.ToTable("PlayerInfoGame");
+                });
+
+            modelBuilder.Entity("GamesCatalog.Database.PlayerTime", b =>
+                {
+                    b.Property<Guid>("PlayerInfoId")
+                        .HasColumnType("uniqueidentifier")
+                        .HasColumnOrder(1);
+
+                    b.Property<int>("StartTime")
+                        .HasColumnType("int")
+                        .HasColumnOrder(2);
+
+                    b.Property<int>("EndTime")
+                        .HasColumnType("int")
+                        .HasColumnOrder(3);
+
+                    b.HasKey("PlayerInfoId", "StartTime", "EndTime");
+
+                    b.ToTable("PlayerTimes");
+                });
+
+            modelBuilder.Entity("GamesCatalog.Database.PlayerInfoGame", b =>
                 {
                     b.HasOne("GamesCatalog.Database.Game", null)
                         .WithMany()
-                        .HasForeignKey("GamesId")
+                        .HasForeignKey("GameId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
@@ -93,6 +112,22 @@ namespace GamesCatalog.Migrations
                         .HasForeignKey("PlayerInfoId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
+                });
+
+            modelBuilder.Entity("GamesCatalog.Database.PlayerTime", b =>
+                {
+                    b.HasOne("GamesCatalog.Database.PlayerInfo", "PlayerInfo")
+                        .WithMany("Times")
+                        .HasForeignKey("PlayerInfoId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("PlayerInfo");
+                });
+
+            modelBuilder.Entity("GamesCatalog.Database.PlayerInfo", b =>
+                {
+                    b.Navigation("Times");
                 });
 #pragma warning restore 612, 618
         }

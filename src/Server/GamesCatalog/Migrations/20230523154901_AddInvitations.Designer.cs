@@ -12,8 +12,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace GamesCatalog.Migrations
 {
     [DbContext(typeof(PlayersDbContext))]
-    [Migration("20230510153952_Initial3")]
-    partial class Initial3
+    [Migration("20230523154901_AddInvitations")]
+    partial class AddInvitations
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -42,6 +42,21 @@ namespace GamesCatalog.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("Games");
+                });
+
+            modelBuilder.Entity("GamesCatalog.Database.Invitations", b =>
+                {
+                    b.Property<Guid>("SenderId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<Guid>("ReceiverId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.HasKey("SenderId", "ReceiverId");
+
+                    b.HasIndex("ReceiverId");
+
+                    b.ToTable("Invitations");
                 });
 
             modelBuilder.Entity("GamesCatalog.Database.PlayerInfo", b =>
@@ -80,6 +95,44 @@ namespace GamesCatalog.Migrations
                     b.ToTable("PlayerInfoGame");
                 });
 
+            modelBuilder.Entity("GamesCatalog.Database.PlayerTime", b =>
+                {
+                    b.Property<Guid>("PlayerInfoId")
+                        .HasColumnType("uniqueidentifier")
+                        .HasColumnOrder(1);
+
+                    b.Property<int>("StartTime")
+                        .HasColumnType("int")
+                        .HasColumnOrder(2);
+
+                    b.Property<int>("EndTime")
+                        .HasColumnType("int")
+                        .HasColumnOrder(3);
+
+                    b.HasKey("PlayerInfoId", "StartTime", "EndTime");
+
+                    b.ToTable("PlayerTimes");
+                });
+
+            modelBuilder.Entity("GamesCatalog.Database.Invitations", b =>
+                {
+                    b.HasOne("GamesCatalog.Database.PlayerInfo", "Receiver")
+                        .WithMany()
+                        .HasForeignKey("ReceiverId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.HasOne("GamesCatalog.Database.PlayerInfo", "Sender")
+                        .WithMany()
+                        .HasForeignKey("SenderId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Receiver");
+
+                    b.Navigation("Sender");
+                });
+
             modelBuilder.Entity("GamesCatalog.Database.PlayerInfoGame", b =>
                 {
                     b.HasOne("GamesCatalog.Database.Game", null)
@@ -93,6 +146,22 @@ namespace GamesCatalog.Migrations
                         .HasForeignKey("PlayerInfoId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
+                });
+
+            modelBuilder.Entity("GamesCatalog.Database.PlayerTime", b =>
+                {
+                    b.HasOne("GamesCatalog.Database.PlayerInfo", "PlayerInfo")
+                        .WithMany("Times")
+                        .HasForeignKey("PlayerInfoId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("PlayerInfo");
+                });
+
+            modelBuilder.Entity("GamesCatalog.Database.PlayerInfo", b =>
+                {
+                    b.Navigation("Times");
                 });
 #pragma warning restore 612, 618
         }

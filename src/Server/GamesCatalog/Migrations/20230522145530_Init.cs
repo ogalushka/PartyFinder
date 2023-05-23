@@ -6,7 +6,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace GamesCatalog.Migrations
 {
     /// <inheritdoc />
-    public partial class Initial : Migration
+    public partial class Init : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -38,23 +38,42 @@ namespace GamesCatalog.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "GamePlayerInfo",
+                name: "PlayerInfoGame",
                 columns: table => new
                 {
-                    GamesId = table.Column<int>(type: "int", nullable: false),
-                    PlayerInfoId = table.Column<Guid>(type: "uniqueidentifier", nullable: false)
+                    PlayerInfoId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    GameId = table.Column<int>(type: "int", nullable: false)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_GamePlayerInfo", x => new { x.GamesId, x.PlayerInfoId });
+                    table.PrimaryKey("PK_PlayerInfoGame", x => new { x.GameId, x.PlayerInfoId });
                     table.ForeignKey(
-                        name: "FK_GamePlayerInfo_Games_GamesId",
-                        column: x => x.GamesId,
+                        name: "FK_PlayerInfoGame_Games_GameId",
+                        column: x => x.GameId,
                         principalTable: "Games",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
-                        name: "FK_GamePlayerInfo_PlayerInfo_PlayerInfoId",
+                        name: "FK_PlayerInfoGame_PlayerInfo_PlayerInfoId",
+                        column: x => x.PlayerInfoId,
+                        principalTable: "PlayerInfo",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "PlayerTimes",
+                columns: table => new
+                {
+                    PlayerInfoId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    StartTime = table.Column<int>(type: "int", nullable: false),
+                    EndTime = table.Column<int>(type: "int", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_PlayerTimes", x => new { x.PlayerInfoId, x.StartTime, x.EndTime });
+                    table.ForeignKey(
+                        name: "FK_PlayerTimes_PlayerInfo_PlayerInfoId",
                         column: x => x.PlayerInfoId,
                         principalTable: "PlayerInfo",
                         principalColumn: "Id",
@@ -62,8 +81,8 @@ namespace GamesCatalog.Migrations
                 });
 
             migrationBuilder.CreateIndex(
-                name: "IX_GamePlayerInfo_PlayerInfoId",
-                table: "GamePlayerInfo",
+                name: "IX_PlayerInfoGame_PlayerInfoId",
+                table: "PlayerInfoGame",
                 column: "PlayerInfoId");
         }
 
@@ -71,7 +90,10 @@ namespace GamesCatalog.Migrations
         protected override void Down(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.DropTable(
-                name: "GamePlayerInfo");
+                name: "PlayerInfoGame");
+
+            migrationBuilder.DropTable(
+                name: "PlayerTimes");
 
             migrationBuilder.DropTable(
                 name: "Games");
